@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Add Company</h1>
+    <form method="POST" action="{% url 'add-company' %}">
+        {% csrf_token %}
+        <label for="name">Company Name:</label><br>
+        <input type="text" id="name" name="name"><br><br>
+        <label for="employees_number">Employees number:</label><br>
+        <input type="number" id="employees_number" name="employees_number"><br><br>
+        <input type="submit" value="Submit"><br><br>
+    </form>
+    <p>Click the "Submit" button to adding a new company.</p>
+{% endblock %}

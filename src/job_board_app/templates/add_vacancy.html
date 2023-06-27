@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Add Company</h1>
+    <form method="POST" action="{% url 'add-vacancy' %}">
+        {% csrf_token %}
+        <label for="name">Position:</label><br>
+        <input type="text" id="name" name="name"><br><br>
+        <label for="company_name">Company name:</label><br>
+        <input type="text" id="company_name" name="company_name"><br><br>
+        <label for="level">Level:</label><br>
+        <input type="text" id="level" name="level"><br><br>
+        <label for="experience">Experience:</label><br>
+        <input type="text" id="experience" name="experience"><br><br>
+        <label for="min_salary">Min salary:</label><br>
+        <input type="number" id="min_salary" name="min_salary"><br><br>
+        <label for="max_salary">Max salary:</label><br>
+        <input type="number" id="max_salary" name="max_salary"><br><br>
+        <input type="submit" value="Submit"><br><br>
+    </form>
+    <p>Click the "Submit" button to adding a new vacancy.</p>
+{% endblock %}

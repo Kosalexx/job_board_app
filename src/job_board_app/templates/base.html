@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Awesome Job_board app!</title>
+    </head>
+
+    <body>
+        <nav>
+            <a href="{% url 'index' %}">Index</a>
+            <a href="{% url 'add-vacancy' %}">Add Vacancy</a>
+            <a href="{% url 'company-list' %}">Companies</a>
+            <a href="{% url 'add-company' %}">Add company</a>
+        </nav>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

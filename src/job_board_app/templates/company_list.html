@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+        <h1>Companies list</h1>
+        <table>
+            <tr>
+                <th>Company</th>
+                <th>Employees</th>
+                <th>Open Positions</th>
+            </tr>
+            {% for company in companies %}
+                <tr>
+                    <td>{{ company.name }}</td>
+                    <td>{{ company.employees_number }}</td>
+                    <th>{{ company.vacancies_counter }}</th>
+                </tr>
+            {% endfor %}
+        </table>
+{% endblock %}
