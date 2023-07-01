@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     # internal
     'core',
 ]
@@ -74,6 +75,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = "job_board_app.template_renders.CustomFormRenderer"
 
 WSGI_APPLICATION = 'job_board_app.wsgi.application'
 

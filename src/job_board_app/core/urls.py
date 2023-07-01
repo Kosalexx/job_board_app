@@ -21,6 +21,10 @@ from .views import (
     add_company_controller,
     add_vacancy_controller,
     companies_list_controller,
+    get_company_controller,
+    get_review_controller,
+    get_user_info,
+    get_vacancy_controller,
     index_controller,
 )
 
@@ -29,4 +33,8 @@ urlpatterns = [
     path("company/add/", add_company_controller, name="add-company"),
     path("company/", companies_list_controller, name="company-list"),
     path("vacancy/add/", add_vacancy_controller, name="add-vacancy"),
+    path("vacancy/<int:vacancy_id>/", get_vacancy_controller, name="specific_vacancy"),
+    path("company/<int:company_id>/", get_company_controller, name="specific_company"),
+    path("company/<int:company_id>/review/", get_review_controller, name="company-review"),
+    path("profile/", get_user_info, name="profile"),
 ]
