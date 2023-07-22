@@ -8,8 +8,10 @@ packages = [{include = "job_board_app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "4.2.2"
+django = "4.2.3"
 python-dotenv = "1.0.0"
+dacite = "1.8.1"
+pillow = "^10.0.0"
 
 [tool.poetry.group.dev.dependencies]
 deptry = "^0.12.0"
@@ -22,6 +24,7 @@ mypy = "1.3.0"
 black = "23.3.0"
 isort = "5.12.0"
 pylint = "2.17.4"
+psycopg2-binary = "2.9.6"
 
 [tool.mypy]
 mypy_path = "src/jobboard_app"
@@ -41,12 +44,19 @@ line-length = 120
 max-line-length = 120
 disable = """
 import-outside-toplevel,
-too-many-instance-attributes
+too-many-instance-attributes,
+no-member,
+too-few-public-methods
 """
+
+[tool.pylint.MASTER]
+ignore-paths = [ "^src/job_board_app/core/migrations/.*$"]
 
 [tool.isort]
 profile = "black"
 
+[tool.deptry]
+ignore = ['DEP001']
 
 [build-system]
 requires = ["poetry-core"]

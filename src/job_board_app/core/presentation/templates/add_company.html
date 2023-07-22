@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Add Company</h1>
+    <form method="POST" action="{% url 'add-company' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ company_form }}
+        <h4>Company profile:</h4>
+        {{ profile_form }}
+        <h4>Company address:</h4>
+        {{ address_form }}
+        <input type="submit" value="Submit"><br><br>
+    </form>
+    <p>Click the "Submit" button to adding a new company.</p>
+{% endblock %}
