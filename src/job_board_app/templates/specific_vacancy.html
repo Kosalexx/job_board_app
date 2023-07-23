@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Vacancy {{ vacancy.id }}:</h1>
+    <h3>Position:</h3>
+    <p>{{ vacancy.name }}</p>
+    <h3>Company:</h3>
+    <p><a href="{% url 'specific_company' vacancy.company.id %}">{{ vacancy.company.name }}</a></p>
+    <h3>Level:</h3>
+    <p>{{ vacancy.level }}</p>
+    <h3>Experience:</h3>
+    <p>{{ vacancy.experience }}</p>
+    <h3>Salary:</h3>
+    {% if vacancy.min_salary and vacancy.max_salary %}
+        <p>{{ vacancy.min_salary }} - {{ vacancy.max_salary }} USD</p>
+    {% elif vacancy.min_salary and not vacancy.max_salary %}
+        <p>From {{ vacancy.min_salary }} USD</p>
+    {% elif not vacancy.min_salary and vacancy.max_salary %}
+        <p>Up to {{ vacancy.max_salary }} USD</p>
+    {% elif not vacancy.min_salary and not vacancy.max_salary %}
+        <p>Undisclosed salary</p>
+    {% endif %}
+    <form action="{% url 'company-review' company.id %}" method="get">
+        <button type="submit">Apply</button>
+    </form>
+{% endblock %}
