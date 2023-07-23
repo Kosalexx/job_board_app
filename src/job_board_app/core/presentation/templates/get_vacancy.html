@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ vacancy.name }}</h1>
+<p>Company: <a href="{% url 'company' vacancy.company.id %}">{{ vacancy.company.name }}</a></p>
+<p>Level: {{ vacancy.level.name }}</p>
+<p>Experience: {{ vacancy.experience }}</p>
+
+{% if vacancy.min_salary and vacancy.max_salary %}
+    <p>Salary: {{ vacancy.min_salary }} - {{ vacancy.max_salary }} USD</p>
+{% elif vacancy.min_salary and not vacancy.max_salary %}
+    <p>Salary: From {{ vacancy.min_salary }} USD</p>
+{% elif not vacancy.min_salary and vacancy.max_salary %}
+    <p>Salary: Up to {{vacancy.max_salary}} USD</p>
+{% elif not vacancy.min_salary and not vacancy.max_salary %}
+    <p>Salary: Undisclosed salary</p>
+{% endif %}
+
+<p>Description: {{ vacancy.description }}</p>
+<p>Employment formats:
+    {% for formats in employment_format %}
+        * {{ formats.name }}
+    {% endfor %}
+</p>
+<p>Work formats:
+    {% for format in work_format %}
+        * {{ format.name }}   
+    {% endfor %}
+</p>
+<p>Available locations:
+    {% for loc in city %}
+        {{ loc.name }}, {{ loc.country.name }}; 
+    {% endfor %}
+</p>
+{% if vacancy.attachment %}
+    <p>Attachments:<a href='{{ vacancy.attachment.url }}'> Download</a></p>
+{% endif %}
+<p>Tags: 
+{% for tag in tags %}
+    #{{tag.name}} 
+{% endfor %}
+
+</p>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+        <h1>Companies list</h1>
+        {% if not companies %}
+        <p>There aren't any companies.</p>
+        {% else %}
+            <table>
+                <tr>
+                    <th>Company</th>
+                    <th>Employees</th>
+                    <th>Open Positions</th>
+                </tr>
+                {% for company in companies %}
+                    <tr>
+                        <td><a href="{% url 'company' company.id %}">{{ company.name }}</a></td>
+                        <td>{{ company.staff }}</td>
+                        <td>{{ company.vacancy__count }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+{% endblock %}

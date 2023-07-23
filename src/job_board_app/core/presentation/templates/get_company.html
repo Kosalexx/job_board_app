@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ company.name }}</h1>
+<img src="{{ profile.logo.url }}" alt="">
+<p>Employees: {{ company.staff }}</p>
+<p>Open Positions: {{ company.vacancy__count }}</p>
+<h4>Vacancies:</h4>
+    {% for vacancy in vacancies %}
+        <a href="{% url 'vacancy' vacancy.id %}">{{ vacancy.name }}</a> | {{ vacancy.level.name }}<br>
+    {% endfor %}
+</p>
+{% endblock %}
