@@ -22,6 +22,7 @@ from core.presentation.views import (
     get_company_controller,
     get_vacancy_controller,
     index_controller,
+    registration_controller,
 )
 from django.urls import path
 
@@ -32,4 +33,5 @@ urlpatterns = [
     path("vacancy/add/", add_vacancy_controller, name="add-vacancy"),
     path("vacancy/<int:vacancy_id>/", get_vacancy_controller, name="vacancy"),
     path("company/<int:company_id>/", get_company_controller, name="company"),
+    path("signin/", registration_controller, name='registration'),
 ]

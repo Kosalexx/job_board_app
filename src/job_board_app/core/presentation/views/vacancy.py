@@ -4,15 +4,12 @@ Views (controllers) for job_board_app that related with Vacancy entity.
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import AddVacancyDTO, SearchVacancyDTO
 from core.business_logic.exceptions import CompanyNotExists
-from core.business_logic.services import (
-    create_vacancy,
-    get_vacancy_by_id,
-    search_vacancies,
-)
+from core.business_logic.services import create_vacancy, get_vacancy_by_id, search_vacancies
 from core.presentation.converters import convert_data_from_form_to_dto
 from core.presentation.forms import AddVacancyForm, SearchVacancyForm
 from django.db import transaction
@@ -25,10 +22,14 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
+logger = logging.getLogger(__name__)
+
+
 @require_http_methods(request_method_list=["GET"])
 def index_controller(request: HttpRequest) -> HttpResponse:
     """Controller for index(main) page."""
     filters_form = SearchVacancyForm(request.GET)
+    logger.info('index_page_log')
     if filters_form.is_valid():
         search_filters = convert_data_from_form_to_dto(SearchVacancyDTO, filters_form.cleaned_data)
 

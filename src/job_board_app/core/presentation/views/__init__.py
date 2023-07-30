@@ -1,10 +1,7 @@
 """Views package initial attributes, classes, and functions."""
 
-from .company import (
-    add_company_controller,
-    companies_list_controller,
-    get_company_controller,
-)
+from .company import add_company_controller, companies_list_controller, get_company_controller
+from .registration import registration_controller
 from .vacancy import add_vacancy_controller, get_vacancy_controller, index_controller
 
 __all__ = [
@@ -14,4 +11,5 @@ __all__ = [
     "index_controller",
     "add_vacancy_controller",
     "get_vacancy_controller",
+    "registration_controller",
 ]

@@ -25,6 +25,12 @@ black = "23.3.0"
 isort = "5.12.0"
 pylint = "2.17.4"
 psycopg2-binary = "2.9.6"
+flake8-bugbear = "23.7.10"
+flake8-comprehensions = "3.14.0"
+flake8-eradicate = "1.5.0"
+flake8-print = "5.0.0"
+flake8-broken-line = "1.0.0"
+flake8-string-format = "0.3.0"
 
 [tool.mypy]
 mypy_path = "src/jobboard_app"
@@ -39,6 +45,7 @@ warn_unused_ignores = true
 [tool.black]
 skip-string-normalization = true
 line-length = 120
+include_trailing_comma = true
 
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 120
@@ -54,6 +61,8 @@ ignore-paths = [ "^src/job_board_app/core/migrations/.*$"]
 
 [tool.isort]
 profile = "black"
+line_length=120
+include_trailing_comma = true
 
 [tool.deptry]
 ignore = ['DEP001']
