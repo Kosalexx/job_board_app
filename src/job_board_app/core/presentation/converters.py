@@ -9,11 +9,12 @@ from core.business_logic.dto import (
     AddCompanyDTO,
     AddCompanyProfileDTO,
     AddVacancyDTO,
+    RegistrationDTO,
     SearchVacancyDTO,
 )
 from dacite import from_dict
 
-T = TypeVar('T', AddAddressDTO, AddCompanyDTO, AddCompanyProfileDTO, AddVacancyDTO, SearchVacancyDTO)
+T = TypeVar('T', AddAddressDTO, AddCompanyDTO, AddCompanyProfileDTO, AddVacancyDTO, SearchVacancyDTO, RegistrationDTO)
 
 
 def convert_data_from_form_to_dto(dto: type[T], data_from_form: dict) -> T:
