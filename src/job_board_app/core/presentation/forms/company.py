@@ -2,6 +2,7 @@
 "Core" app Company forms of job_board_app project.
 """
 
+
 from core.models import Country
 from core.presentation.validators import (
     ValidateFileSize,

@@ -8,6 +8,7 @@ from .company import (
     get_company_profile_by_id,
     get_vacancies_by_company_id,
 )
+from .registration import create_user
 from .vacancy import create_vacancy, get_vacancy_by_id, search_vacancies
 
 __all__ = [
@@ -21,4 +22,5 @@ __all__ = [
     "create_vacancy",
     "replace_file_name_to_uuid",
     "get_vacancies_by_company_id",
+    "create_user",
 ]
