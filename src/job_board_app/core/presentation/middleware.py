@@ -4,12 +4,16 @@ Custom middleware.
 
 from __future__ import annotations
 
+from logging import getLogger
 from typing import TYPE_CHECKING, Callable
 
 from django.http import HttpResponseBadRequest
 
 if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
+
+
+logger = getLogger(__name__)
 
 
 class BlockURLMiddleware:
@@ -22,6 +26,7 @@ class BlockURLMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         if request.path in self.BLOCK_URLS:
+            logger.warning('URL blocked by middleware (URL in block list).')
             return HttpResponseBadRequest(content="This url blocked.")
 
         response = self.get_response(request)
@@ -35,8 +40,8 @@ class TransferRandomMessageMiddleware:
         self._get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
-        request.random_message = "Hello World"
-
+        rand_message = "Hello World"
+        request.random_message = rand_message
         response = self._get_response(request)
 
         return response

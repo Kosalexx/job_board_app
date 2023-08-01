@@ -15,6 +15,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from job_board_app.logger_formatter import ContextFormatter
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -143,3 +145,48 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(BASE_DIR.parents[3], "media_files", "job_board_app")
 
 MEDIA_URL = "media/"
+
+
+# Logging settings
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'main_format': {
+            '()': ContextFormatter,
+            'format': "[{asctime}] - {levelname} - {name} - {module}:{funcName}:{lineno} - {message}",
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'style': "{",
+        },
+    },
+    'handlers': {
+        'console_handler': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_format',
+            'level': os.environ['LOG_LEVEL'],
+        },
+        'file_handler': {
+            'class': 'logging.FileHandler',
+            'formatter': 'main_format',
+            'filename': 'inform.log',
+            'level': os.environ["LOG_LEVEL"],
+        },
+    },
+    'loggers': {
+        'root': {
+            'handlers': ['console_handler', 'file_handler'],
+            'level': 'INFO' if not DEBUG else 'DEBUG',
+            'propagate': False,
+        },
+        'django': {
+            'level': os.environ["LOG_LEVEL"],
+            'handlers': ['console_handler', 'file_handler'],
+            'propagate': False,
+        },
+        "PIL": {
+            "level": 'WARNING',
+            'handlers': ['console_handler', 'file_handler'],
+        },
+    },
+}
