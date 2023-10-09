@@ -1,32 +1,34 @@
 """
-Custom migration that populate WorkStatuses table with default values.
+Custom migration that populate Group table with default values.
 """
 
 from typing import Any
 
-from core.models import WorkStatus
+from django.contrib.auth.models import Group, Permission
 from django.db import migrations
 
-DEFAULT_VALUES = ("Open to work", "Open for proposals", "Not open for proposals")
+DEFAULT_VALUES = {"candidate": [], "recruiter": ['add_vacancy', 'add_company']}
 
 
 def populate_table(apps: Any, schema_editor: Any) -> None:
     """Populates table with default values."""
-    for value in DEFAULT_VALUES:
-        WorkStatus.objects.create(name=value)
+    for key, value in DEFAULT_VALUES.items():
+        group = Group.objects.create(name=key)
+        permissions = Permission.objects.filter(codename__in=value)
+        group.permissions.set(permissions)
 
 
 def reverse_table_population(apps: Any, schema_editor: Any) -> None:
     """Reverse table population."""
-    for value in DEFAULT_VALUES:
-        WorkStatus.objects.get(name=value).delete()
+    for key in DEFAULT_VALUES.keys():
+        Group.objects.get(name=key).delete()
 
 
 class Migration(migrations.Migration):
     """Creates django migration that writes data to the database."""
 
     dependencies = [
-        ("core", "0006_populate_employment_format_table"),
+        ("core", "0006_populate_country_table"),
     ]
 
     operations = [

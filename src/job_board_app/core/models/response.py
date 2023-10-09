@@ -2,6 +2,7 @@
 "Core" app Response models of job_board_app project.
 """
 
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from .base import BaseModel
@@ -22,7 +23,7 @@ class Response(BaseModel):
     """Describes the fields and attributes of the Response model in the database."""
 
     user = models.ForeignKey(
-        to="User", on_delete=models.CASCADE, related_name='responses', related_query_name='response'
+        to=get_user_model(), on_delete=models.CASCADE, related_name='responses', related_query_name='response'
     )
     vacancy = models.ForeignKey(
         to="Vacancy", on_delete=models.CASCADE, related_name='responses', related_query_name='response'

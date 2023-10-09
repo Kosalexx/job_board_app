@@ -4,14 +4,20 @@ Views (controllers) for job_board_app that related with Vacancy entity.
 
 from __future__ import annotations
 
-
 from logging import getLogger
-
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import AddVacancyDTO, SearchVacancyDTO
-from core.business_logic.exceptions import CompanyNotExists
-from core.business_logic.services import create_vacancy, get_vacancy_by_id, search_vacancies
+from core.business_logic.exceptions import CompanyNotExistsError
+from core.business_logic.services import (
+    create_vacancy,
+    get_countries,
+    get_employment_formats,
+    get_levels,
+    get_vacancy_by_id,
+    get_work_formats,
+    search_vacancies,
+)
 from core.presentation.converters import convert_data_from_form_to_dto
 from core.presentation.forms import AddVacancyForm, SearchVacancyForm
 from django.db import transaction
@@ -26,18 +32,33 @@ if TYPE_CHECKING:
 
 logger = getLogger(__name__)
 
+COUNTRIES: list[tuple[str, str]] = get_countries()
+WORK_FORMATS: list[tuple[str, str]] = get_work_formats()
+EMPLOYMENT_FORMATS: list[tuple[str, str]] = get_employment_formats()
+LEVELS: list[tuple[str, str]] = get_levels()
+
 
 @require_http_methods(request_method_list=["GET"])
 def index_controller(request: HttpRequest) -> HttpResponse:
     """Controller for index(main) page."""
-    filters_form = SearchVacancyForm(request.GET)
+    filters_form = SearchVacancyForm(
+        levels=[('', 'All')] + LEVELS,
+        employment_formats=EMPLOYMENT_FORMATS,
+        work_formats=WORK_FORMATS,
+        countries=[('', 'All')] + COUNTRIES,
+        data=request.GET,
+    )
     logger.info('index_page_log')
     if filters_form.is_valid():
         search_filters = convert_data_from_form_to_dto(SearchVacancyDTO, filters_form.cleaned_data)
-
         vacancies = search_vacancies(search_filters=search_filters)
-
-        form = SearchVacancyForm()
+        form = SearchVacancyForm(
+            levels=[('', 'All')] + LEVELS,
+            employment_formats=EMPLOYMENT_FORMATS,
+            work_formats=WORK_FORMATS,
+            countries=[('', 'All')] + COUNTRIES,
+            data=request.GET,
+        )
         context = {"vacancies": vacancies, "form": form}
         logger.info(
             "Successfully rendered index page by entered filters.",
@@ -53,13 +74,22 @@ def index_controller(request: HttpRequest) -> HttpResponse:
 def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
     """Controller for adding a new vacancy."""
     if request.method == "GET":
-        form = AddVacancyForm()
+        form = AddVacancyForm(
+            levels=LEVELS, employment_formats=EMPLOYMENT_FORMATS, work_formats=WORK_FORMATS, countries=COUNTRIES
+        )
         context = {"form": form}
         logger.info("Successfully rendered form for adding vacancy.")
         return render(request=request, template_name="add_vacancy.html", context=context)
 
     if request.method == 'POST':
-        form = AddVacancyForm(data=request.POST, files=request.FILES)
+        form = AddVacancyForm(
+            levels=LEVELS,
+            employment_formats=EMPLOYMENT_FORMATS,
+            work_formats=WORK_FORMATS,
+            countries=COUNTRIES,
+            data=request.POST,
+            files=request.FILES,
+        )
         if form.is_valid():
             data = convert_data_from_form_to_dto(AddVacancyDTO, form.cleaned_data)
             logger.info(
@@ -70,7 +100,7 @@ def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
             )
             try:
                 create_vacancy(data=data)
-            except CompanyNotExists as err:
+            except CompanyNotExistsError as err:
                 logger.error(  # pylint: disable=logging-fstring-interpolation
                     f"Company '{data.company_name}' doesn't exist in the database.",
                     extra={'company_name': data.company_name},

@@ -1,34 +1,32 @@
 """
-Custom migration that populate Group table with default values.
+Custom migration that populate LanguageLevels table with default values.
 """
 
 from typing import Any
 
-from django.contrib.auth.models import Group, Permission
+from core.models import EmploymentFormat
 from django.db import migrations
 
-DEFAULT_VALUES = {"candidate": [], "recruiter": ['add_vacancy', 'add_company']}
+DEFAULT_VALUES = ("Employment contract", "B2B", "Mandate contract")
 
 
 def populate_table(apps: Any, schema_editor: Any) -> None:
     """Populates table with default values."""
-    for key, value in DEFAULT_VALUES.items():
-        group = Group.objects.create(name=key)
-        permissions = Permission.objects.filter(codename__in=value)
-        group.permissions.set(permissions)
+    for value in DEFAULT_VALUES:
+        EmploymentFormat.objects.create(name=value)
 
 
 def reverse_table_population(apps: Any, schema_editor: Any) -> None:
     """Reverse table population."""
-    for key in DEFAULT_VALUES.keys():
-        Group.objects.get(name=key).delete()
+    for value in DEFAULT_VALUES:
+        EmploymentFormat.objects.get(name=value).delete()
 
 
 class Migration(migrations.Migration):
     """Creates django migration that writes data to the database."""
 
     dependencies = [
-        ("core", "0015_rename_company_profile_companyprofile"),
+        ("core", "0003_populate_language_levels_table"),
     ]
 
     operations = [

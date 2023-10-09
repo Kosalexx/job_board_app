@@ -190,3 +190,20 @@ LOGGING = {
         },
     },
 }
+
+# Confirmation code settings (needed for user confirmation by email)
+
+CONFIRMATION_CODE_LIVETIME = 3600
+
+# SMTP server settings
+
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_PORT = os.environ['EMAIL_PORT']
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_BACKEND = os.environ['EMAIL_BACKEND']
+EMAIL_FROM = os.environ['EMAIL_FROM']
+
+SERVER_HOST = os.environ['SERVER_HOST']

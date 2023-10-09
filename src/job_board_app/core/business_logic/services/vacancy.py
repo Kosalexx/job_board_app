@@ -7,19 +7,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from core.business_logic.exceptions import CompanyNotExists
+from core.business_logic.exceptions import CompanyNotExistsError
 from core.business_logic.services.common import replace_file_name_to_uuid
-from core.models import (
-    City,
-    Company,
-    Country,
-    EmploymentFormat,
-    Level,
-    Tag,
-    Vacancy,
-    WorkFormat,
-)
+from core.models import City, Company, Country, EmploymentFormat, Level, Tag, Vacancy, WorkFormat
 from django.db import transaction
+from django.db.models import Count
 
 if TYPE_CHECKING:
     from core.business_logic.dto import AddVacancyDTO, SearchVacancyDTO
@@ -70,10 +62,11 @@ def search_vacancies(search_filters: SearchVacancyDTO) -> list[Vacancy]:
         vacancies = vacancies.filter(tags__name=search_filters.tag)
 
     vacancies = vacancies.order_by('-id').distinct()
+    position = search_filters.name
     logger.info(
         'The list of vacancies according to the transmitted filters has been successfully received.',
         extra={
-            'name': search_filters.name,
+            'position': position,
             'company_name': search_filters.company_name,
             'level': search_filters.level,
             'experience': search_filters.experience,
@@ -108,7 +101,7 @@ def create_vacancy(data: AddVacancyDTO) -> None:  # pylint: disable=too-many-loc
             company = Company.objects.get(name=data.company_name)
         except Company.DoesNotExist as exc:
             logger.warning("Company doesn't exists.", extra={'company': data.company_name}, exc_info=exc)
-            raise CompanyNotExists from exc
+            raise CompanyNotExistsError from exc
 
         cities: list[str] = data.city.split('\r\n')
         city_list: list[City] = []
@@ -147,7 +140,7 @@ def create_vacancy(data: AddVacancyDTO) -> None:  # pylint: disable=too-many-loc
         logger.info(
             'Successfully created vacancy in db.',
             extra={
-                "name": data.name,
+                "vacancy_name": data.name,
                 "level": data.level,
                 "company": data.company_name,
                 "experience": data.experience,
@@ -181,6 +174,7 @@ def get_vacancy_by_id(
     vacancy = (
         Vacancy.objects.select_related("level", "company")
         .prefetch_related("tags", "employment_format", "work_format", 'city')
+        .annotate(num_work_format=Count("work_format", distinct=True))
         .get(pk=vacancy_id)
     )
     tags = vacancy.tags.all()
