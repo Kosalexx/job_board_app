@@ -15,13 +15,12 @@ from core.models import (
     LanguageLevel,
     Level,
     Position,
+    Profile,
     Response,
     ResponseStatus,
     Review,
     Tag,
-    User,
     UsersLanguages,
-    UsersProfile,
     Vacancy,
     WorkFormat,
     WorkStatus,
@@ -45,8 +44,7 @@ admin.site.register(Response)
 admin.site.register(ResponseStatus)
 admin.site.register(Review)
 admin.site.register(Tag)
-admin.site.register(UsersProfile)
-admin.site.register(User)
+admin.site.register(Profile)
 admin.site.register(UsersLanguages)
 admin.site.register(WorkFormat)
 admin.site.register(WorkStatus)

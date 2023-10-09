@@ -3,6 +3,7 @@ Forms package attributes, classes, and functions.
 """
 
 from .company import AddAddressFrom, AddCompanyForm, CompanyProfileForm
+from .login import LoginForm
 from .registration import RegistrationForm
 from .vacancy import AddVacancyForm, SearchVacancyForm
 
@@ -13,4 +14,5 @@ __all__ = [
     "CompanyProfileForm",
     "AddAddressFrom",
     "RegistrationForm",
+    "LoginForm",
 ]

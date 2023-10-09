@@ -2,16 +2,23 @@
 "Core" app Registration forms of job_board_app project.
 """
 
-from django import forms
-from django.contrib.auth.models import Group
+from typing import Any
 
-USER_TYPE_CHOICES = [(group.name, group.name) for group in Group.objects.all()]
+from django import forms
 
 
 class RegistrationForm(forms.Form):
     """Form user registration."""
 
-    username = forms.CharField(label='Username', max_length=100)
-    password = forms.CharField(label='Password', widget=forms.PasswordInput, max_length=100)
-    email = forms.EmailField(label='Enter Email')
-    role = forms.ChoiceField(label='Choose account type', choices=USER_TYPE_CHOICES)
+    username = forms.CharField(
+        label='Username', max_length=100, widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+    password = forms.CharField(
+        label='Password', widget=forms.PasswordInput(attrs={"class": "form-control"}), max_length=100
+    )
+    email = forms.EmailField(label='Enter Email', widget=forms.TextInput(attrs={"class": "form-control"}))
+    role = forms.ChoiceField(label='Choose account type', widget=forms.Select(attrs={"class": "form-control"}))
+
+    def __init__(self, roles: list[tuple[str, str]], *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["role"].choices = roles

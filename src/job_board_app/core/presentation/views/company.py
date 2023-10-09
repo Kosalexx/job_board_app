@@ -13,6 +13,7 @@ from core.business_logic.services import (
     get_companies,
     get_company_by_id,
     get_company_profile_by_id,
+    get_countries,
     get_vacancies_by_company_id,
 )
 from core.presentation.converters import convert_data_from_form_to_dto
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+COUNTRIES = get_countries()
 
 
 @require_http_methods(request_method_list=['GET', 'POST'])
@@ -35,7 +37,7 @@ def add_company_controller(request: HttpRequest) -> HttpResponse:
     if request.method == "GET":
         company_form = AddCompanyForm(prefix='company')
         profile_form = CompanyProfileForm(prefix='profile')
-        address_form = AddAddressFrom(prefix='address')
+        address_form = AddAddressFrom(countries=COUNTRIES, prefix='address')
         context = {"company_form": company_form, "profile_form": profile_form, "address_form": address_form}
         logger.info('Successfully rendered forms for adding a new company.')
         return render(request=request, template_name="add_company.html", context=context)
@@ -43,7 +45,7 @@ def add_company_controller(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         company_form = AddCompanyForm(request.POST, prefix='company')
         profile_form = CompanyProfileForm(request.POST, request.FILES, prefix='profile')
-        address_form = AddAddressFrom(request.POST, prefix='address')
+        address_form = AddAddressFrom(COUNTRIES, request.POST, prefix='address')
         if company_form.is_valid() and profile_form.is_valid() and address_form.is_valid():
             company_data = convert_data_from_form_to_dto(AddCompanyDTO, company_form.cleaned_data)
             profile_data = convert_data_from_form_to_dto(AddCompanyProfileDTO, profile_form.cleaned_data)

@@ -1,10 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-    <form method="GET" action="{% url 'index' %}">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" id="submit"><br>
-    </form>
+<div class="collapse" id="navbarToggleExternalContent">
+    <div class="p-4">
+        <form method="GET" action="{% url 'index' %}">
+            {{ form }}
+            <input type="submit" id="submit"><br>
+        </form>
+    </div>
+  </div>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        Filters <span class="navbar-toggler-icon"></span>
+      </button>
+      
+    </div>
+    <div class="p-4">
+        {% for field in form %}
+        {% if field.value %}
+            <small class="text-muted">{{ field.label_tag }} {{ field.value }};</small>
+        {% endif %}
+      {% endfor %}
+      </div>
+  </nav>
+    
     <h1>Vacancies list</h1>
     <table>
         <tr>

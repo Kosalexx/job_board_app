@@ -223,7 +223,7 @@ class Migration(migrations.Migration):
     """Creates django migration that writes data to the database."""
 
     dependencies = [
-        ("core", "0011_alter_country_name_alter_vacancy_attachment"),
+        ("core", "0005_populate_work_formats_table"),
     ]
 
     operations = [

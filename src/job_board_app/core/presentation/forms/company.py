@@ -1,9 +1,8 @@
 """
 "Core" app Company forms of job_board_app project.
 """
+from typing import Any
 
-
-from core.models import Country
 from core.presentation.validators import (
     ValidateFileSize,
     ValidateImageExtensions,
@@ -11,8 +10,6 @@ from core.presentation.validators import (
     validate_swear_words_in_company_name,
 )
 from django import forms
-
-COUNTRIES = [(value.name, value.name) for value in Country.objects.all()]
 
 
 class AddCompanyForm(forms.Form):
@@ -49,8 +46,12 @@ class CompanyProfileForm(forms.Form):
 class AddAddressFrom(forms.Form):
     """Form for adding a new address."""
 
-    country = forms.ChoiceField(label='Country', choices=COUNTRIES, required=True)
+    country = forms.ChoiceField(label='Country', required=True)
     city = forms.CharField(max_length=100, required=True)
     street_name = forms.CharField(max_length=100, required=True)
     home_number = forms.IntegerField(min_value=1, required=True)
     office_number = forms.IntegerField(min_value=1, required=False)
+
+    def __init__(self, countries: list[tuple[str, str]], *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["country"].choices = countries

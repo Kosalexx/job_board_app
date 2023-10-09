@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block not_auth_content %}
+{% load static %} 
+
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <img src="{% static 'img/logo.png' %}" class="d-block mx-auto mb-4" width="200" height="200" loading="lazy">
+        <h1 class="display-4 fw-bold lh-1 text-body-emphasis text-center mb-3">Job Board</h1>
+        <p class="fs-3 text-center">Create your future!</p>
+        
+      </div>
+      <div class="col-md-10 mx-auto col-lg-5">
+        
+        <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="POST" action="{% url 'signup' %}" enctype="multipart/form-data">
+            <h1 class="display-7 fw-bold lh-1 text-center mb-3">Sign Up</h1>
+            <p style="color:red">{{ err_message }}<p></p>
+            {% csrf_token %}
+            {{ form }}
+          <input class="w-75 btn btn-lg btn-primary" type="submit" value="Sign Up"></button>
+          <hr class="my-4">
+          <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
+          <hr class="my-4">
+          <small class="text-body-secondary">Do you already have an account?</small>
+          <a class="w-75 btn btn-outline-primary" href="{% url 'login' %}">Sign In!</a>
+        </form>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

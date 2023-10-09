@@ -7,26 +7,14 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from core.models import (
-    Address,
-    BusinessArea,
-    City,
-    Company,
-    CompanyProfile,
-    Country,
-    Vacancy,
-)
+from core.models import Address, BusinessArea, City, Company, CompanyProfile, Country, Vacancy
 from django.db import transaction
 from django.db.models import Count
 
 from .common import change_file_size, replace_file_name_to_uuid
 
 if TYPE_CHECKING:
-    from core.business_logic.dto import (
-        AddAddressDTO,
-        AddCompanyDTO,
-        AddCompanyProfileDTO,
-    )
+    from core.business_logic.dto import AddAddressDTO, AddCompanyDTO, AddCompanyProfileDTO
 
 
 logger = logging.getLogger(__name__)
@@ -106,13 +94,10 @@ def create_company(  # pylint: disable=too-many-locals
             )
         created_company = Company.objects.create(name=company_data.name, staff=company_data.staff)
         logger.info(
-            'Successfully created country in db.', extra={"name": company_data.name, "staff": str(company_data.staff)}
+            'Successfully created country in db.',
+            extra={"company_name": company_data.name, "staff": str(company_data.staff)},
         )
         created_company.business_area.set(business_areas_list)
-        logger.info(  # pylint: disable=logging-fstring-interpolation
-            f'Successfully added business areas of company "{company_data.name}".',
-            extra={"Company_name": company_data.name, "business_areas_list": business_areas_list},
-        )
         if profile_data.logo is not None:
             file = replace_file_name_to_uuid(profile_data.logo)
             file = change_file_size(file=file)
