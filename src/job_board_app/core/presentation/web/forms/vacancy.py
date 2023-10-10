@@ -3,7 +3,7 @@
 """
 from typing import Any
 
-from core.presentation.validators import ValidateFileExtensions, ValidateFileSize, ValidateMaxTagCount
+from core.presentation.common.validators import ValidateFileExtensions, ValidateFileSize, ValidateMaxTagCount
 from django import forms
 
 

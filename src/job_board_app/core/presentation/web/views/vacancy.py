@@ -18,8 +18,8 @@ from core.business_logic.services import (
     get_work_formats,
     search_vacancies,
 )
-from core.presentation.converters import convert_data_from_form_to_dto
-from core.presentation.forms import AddVacancyForm, SearchVacancyForm
+from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.web.forms import AddVacancyForm, SearchVacancyForm
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render

@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 from core.business_logic.dto import LoginDTO
 from core.business_logic.exceptions import InvalidAuthCredentialsError
 from core.business_logic.services import authenticate_user
-from core.presentation.converters import convert_data_from_form_to_dto
-from core.presentation.forms import LoginForm
+from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.web.forms import LoginForm
 from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render

@@ -10,7 +10,7 @@ from .base import BaseModel
 def vacancy_directory_path(instance: "Vacancy", filename: str) -> str:
     """Provides a path to directory with files of specific vacancy."""
 
-    return f'vacancy_attachments/company_{instance.company.id}/({instance.name})_{instance.level.name}/{filename}'
+    return f'vacancy_attachments/company_{instance.company.id}/' f'({instance.name})_{instance.level.name}/{filename}'
 
 
 class Vacancy(BaseModel):

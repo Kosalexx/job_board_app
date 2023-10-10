@@ -19,14 +19,6 @@ repos:
                                   flake8-comprehensions, flake8-eradicate, flake8-print,
                                   flake8-broken-line, flake8-string-format]
 
--   repo: local
-    hooks:
-    -   id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
-        require_serial: true
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.4.1
@@ -34,7 +26,3 @@ repos:
     -   id: mypy
         additional_dependencies: []
 
--   repo: https://github.com/fpgmaas/deptry
-    rev: 0.12.0
-    hooks:
-    -   id: deptry

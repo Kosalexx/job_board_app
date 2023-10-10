@@ -13,8 +13,8 @@ from core.business_logic.exceptions import (
     UserAlreadyExistsError,
 )
 from core.business_logic.services import confirm_user_registration, create_user, get_groups
-from core.presentation.converters import convert_data_from_form_to_dto
-from core.presentation.forms import RegistrationForm
+from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.web.forms import RegistrationForm
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
