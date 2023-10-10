@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from core.presentation.views import (
+from core.presentation.web.views import (
     add_company_controller,
     add_vacancy_controller,
     companies_list_controller,

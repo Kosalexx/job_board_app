@@ -16,8 +16,8 @@ from core.business_logic.services import (
     get_countries,
     get_vacancies_by_company_id,
 )
-from core.presentation.converters import convert_data_from_form_to_dto
-from core.presentation.forms import AddAddressFrom, AddCompanyForm, CompanyProfileForm
+from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.web.forms import AddAddressFrom, AddCompanyForm, CompanyProfileForm
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse

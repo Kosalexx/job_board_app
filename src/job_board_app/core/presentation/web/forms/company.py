@@ -3,7 +3,7 @@
 """
 from typing import Any
 
-from core.presentation.validators import (
+from core.presentation.common.validators import (
     ValidateFileSize,
     ValidateImageExtensions,
     ValidateMaxAreasCount,
