@@ -1,0 +1,31 @@
+version: '3.10'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - '${DB_PORT}:5432'
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+
+  app:
+    build: .
+    ports:
+      - '8000:8000'
+    command: >
+      sh -c 'python3 ./src/job_board_app/manage.py runserver 0.0.0.0:8000'
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  pg_data:
+    driver: local
