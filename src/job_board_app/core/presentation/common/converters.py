@@ -9,6 +9,7 @@ from core.business_logic.dto import (
     AddCompanyDTO,
     AddCompanyProfileDTO,
     AddVacancyDTO,
+    ApplyVacancyDTO,
     LoginDTO,
     RegistrationDTO,
     SearchVacancyDTO,
@@ -16,7 +17,15 @@ from core.business_logic.dto import (
 from dacite import from_dict
 
 T = TypeVar(
-    'T', AddAddressDTO, AddCompanyDTO, AddCompanyProfileDTO, AddVacancyDTO, SearchVacancyDTO, RegistrationDTO, LoginDTO
+    'T',
+    AddAddressDTO,
+    AddCompanyDTO,
+    AddCompanyProfileDTO,
+    AddVacancyDTO,
+    SearchVacancyDTO,
+    RegistrationDTO,
+    LoginDTO,
+    ApplyVacancyDTO,
 )
 
 

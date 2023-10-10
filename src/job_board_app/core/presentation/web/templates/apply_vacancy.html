@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Apply vacancy</h1>
+    <form method="POST" action="{% url 'apply-vacancy' vacancy_id=vacancy_id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit"><br><br>
+    </form>
+    <p>Click the "Submit" button to apply to vacancy.</p>
+{% endblock %}

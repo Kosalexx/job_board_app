@@ -7,9 +7,10 @@ from __future__ import annotations
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from core.business_logic.dto import AddVacancyDTO, SearchVacancyDTO
+from core.business_logic.dto import AddVacancyDTO, ApplyVacancyDTO, SearchVacancyDTO
 from core.business_logic.exceptions import CompanyNotExistsError
 from core.business_logic.services import (
+    apply_to_vacancy,
     create_vacancy,
     get_countries,
     get_employment_formats,
@@ -19,10 +20,11 @@ from core.business_logic.services import (
     search_vacancies,
 )
 from core.presentation.common.converters import convert_data_from_form_to_dto
-from core.presentation.web.forms import AddVacancyForm, SearchVacancyForm
+from core.presentation.web.forms import AddVacancyForm, ApplyVacancyForm, SearchVacancyForm
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
@@ -69,6 +71,7 @@ def index_controller(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name="index.html", context=context)
 
 
+@permission_required(["core.add_vacancy"])
 @transaction.non_atomic_requests
 @require_http_methods(request_method_list=["GET", "POST"])
 def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
@@ -119,7 +122,12 @@ def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
 @require_http_methods(request_method_list=['GET'])
 def get_vacancy_controller(request: HttpRequest, vacancy_id: int) -> HttpResponse:
     """Controller for specific vacancy."""
-    vacancy, tags, employment_format, work_format, city = get_vacancy_by_id(vacancy_id=vacancy_id)
+    vacancy_dto = get_vacancy_by_id(vacancy_id=vacancy_id)
+    vacancy = vacancy_dto.vacancy
+    tags = vacancy_dto.tags
+    employment_format = vacancy_dto.employment_format
+    work_format = vacancy_dto.work_format
+    city = vacancy_dto.city
     context = {
         "vacancy": vacancy,
         "tags": tags,
@@ -131,3 +139,34 @@ def get_vacancy_controller(request: HttpRequest, vacancy_id: int) -> HttpRespons
         f'Successfully rendered template(page) of vacancy {vacancy.name}.', extra={'vacancy_name': vacancy.name}
     )
     return render(request=request, template_name="get_vacancy.html", context=context)
+
+
+@login_required
+@permission_required(['core.apply_to_vacancy'])
+@require_http_methods(request_method_list=['GET', 'POST'])
+def apply_vacancy_controller(request: HttpRequest, vacancy_id: int) -> HttpResponse:
+    """Controller for apply to vacancy logic."""
+    if request.method == 'GET':
+        form = ApplyVacancyForm()
+        context = {'form': form, "vacancy_id": vacancy_id}
+        return render(request=request, template_name='apply_vacancy.html', context=context)
+    else:
+        form = ApplyVacancyForm(request.POST, files=request.FILES)
+        if form.is_valid():
+            data = convert_data_from_form_to_dto(ApplyVacancyDTO, form.cleaned_data)
+            data.user = request.user
+            data.vacancy = get_vacancy_by_id(vacancy_id=vacancy_id).vacancy
+            apply_to_vacancy(data=data)
+        else:
+            logger.warning('The forms have not been validated.')
+            context = {'form': form, "vacancy_id": vacancy_id}
+            return render(request=request, template_name="apply_vacancy.html", context=context)
+        return redirect(to='post-apply')
+
+
+@login_required
+@permission_required(['core.apply_to_vacancy'])
+@require_http_methods(request_method_list=['GET', 'POST'])
+def successfully_apply_controller(request: HttpRequest) -> HttpResponse:
+    """Controller for successfully apply."""
+    return render(request=request, template_name='apply_success.html')

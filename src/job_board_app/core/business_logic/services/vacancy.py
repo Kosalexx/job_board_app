@@ -7,14 +7,17 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from core.business_logic.dto import VacancyDataDTO
 from core.business_logic.exceptions import CompanyNotExistsError
 from core.business_logic.services.common import replace_file_name_to_uuid
-from core.models import City, Company, Country, EmploymentFormat, Level, Tag, Vacancy, WorkFormat
+from core.models import City, Company, Country, EmploymentFormat, Level, Response, Tag, Vacancy, WorkFormat
 from django.db import transaction
 from django.db.models import Count
 
+from .response import get_response_status_by_name
+
 if TYPE_CHECKING:
-    from core.business_logic.dto import AddVacancyDTO, SearchVacancyDTO
+    from core.business_logic.dto import AddVacancyDTO, ApplyVacancyDTO, SearchVacancyDTO
 
 
 logger = logging.getLogger(__name__)
@@ -168,7 +171,7 @@ def create_vacancy(data: AddVacancyDTO) -> None:  # pylint: disable=too-many-loc
 
 def get_vacancy_by_id(
     vacancy_id: int,
-) -> tuple[Vacancy, list[Tag], list[EmploymentFormat], list[WorkFormat], list[City]]:
+) -> VacancyDataDTO:
     """Gets a specific Vacancy data from the database by entered vacancy_id."""
 
     vacancy = (
@@ -182,4 +185,19 @@ def get_vacancy_by_id(
     work_format = vacancy.work_format.all()
     city = vacancy.city.all()
     logger.info('Successfully got vacancy data.', extra={'vacancy_id': str(vacancy_id), 'vacancy_name': vacancy.name})
-    return vacancy, list(tags), list(employment_format), list(work_format), list(city)
+    result = VacancyDataDTO(
+        vacancy=vacancy,
+        tags=list(tags),
+        employment_format=list(employment_format),
+        work_format=list(work_format),
+        city=list(city),
+    )
+    return result
+
+
+def apply_to_vacancy(data: ApplyVacancyDTO) -> None:
+    """Creates job response."""
+    response_status = get_response_status_by_name('New')
+    Response.objects.create(
+        user=data.user, vacancy=data.vacancy, cover_note=data.cover_note, cv=data.cv, response_status=response_status
+    )

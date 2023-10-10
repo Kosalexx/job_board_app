@@ -18,6 +18,7 @@ Including another URLconf
 from core.presentation.web.views import (
     add_company_controller,
     add_vacancy_controller,
+    apply_vacancy_controller,
     companies_list_controller,
     get_company_controller,
     get_vacancy_controller,
@@ -26,6 +27,7 @@ from core.presentation.web.views import (
     logout_controller,
     registration_confirmation,
     registration_controller,
+    successfully_apply_controller,
 )
 from django.urls import path
 
@@ -40,4 +42,6 @@ urlpatterns = [
     path("confirmation/", registration_confirmation, name='confirm-signup'),
     path("signin/", login_controller, name='login'),
     path("logout/", logout_controller, name='logout'),
+    path("vacancy/<int:vacancy_id>/apply/", apply_vacancy_controller, name='apply-vacancy'),
+    path("vacancy/apply/success", successfully_apply_controller, name='post-apply'),
 ]
