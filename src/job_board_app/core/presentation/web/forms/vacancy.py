@@ -78,3 +78,13 @@ class SearchVacancyForm(forms.Form):
         self.fields["employment_format"].choices = employment_formats
         self.fields["work_format"].choices = work_formats
         self.fields["country"].choices = countries
+
+
+class ApplyVacancyForm(forms.Form):
+    cover_note = forms.CharField(label='Note', max_length=500, widget=forms.Textarea(attrs={"class": "form-control"}))
+    cv = forms.FileField(
+        label='CV',
+        allow_empty_file=False,
+        validators=[ValidateFileExtensions(['pdf']), ValidateFileSize(max_size=5_000_000)],
+        widget=forms.FileInput(attrs={"class": "form-control"}),
+    )

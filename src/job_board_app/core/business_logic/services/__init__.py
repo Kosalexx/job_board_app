@@ -14,7 +14,8 @@ from .groups import get_groups
 from .levels import get_levels
 from .login import authenticate_user
 from .registration import confirm_user_registration, create_user
-from .vacancy import create_vacancy, get_vacancy_by_id, search_vacancies
+from .response import get_response_status_by_name
+from .vacancy import apply_to_vacancy, create_vacancy, get_vacancy_by_id, search_vacancies
 from .work_formats import get_work_formats
 
 __all__ = [
@@ -36,4 +37,6 @@ __all__ = [
     "get_levels",
     "get_employment_formats",
     "get_work_formats",
+    "apply_to_vacancy",
+    "get_response_status_by_name",
 ]

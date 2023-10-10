@@ -18,6 +18,7 @@ from core.business_logic.services import (
 )
 from core.presentation.common.converters import convert_data_from_form_to_dto
 from core.presentation.web.forms import AddAddressFrom, AddCompanyForm, CompanyProfileForm
+from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 COUNTRIES = get_countries()
 
 
+@permission_required(["core.add_company"])
 @require_http_methods(request_method_list=['GET', 'POST'])
 def add_company_controller(request: HttpRequest) -> HttpResponse:
     """Controller for adding a new company."""

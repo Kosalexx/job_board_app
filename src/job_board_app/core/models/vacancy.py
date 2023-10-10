@@ -39,3 +39,6 @@ class Vacancy(BaseModel):
         """Describes class metadata."""
 
         db_table = "vacancies"
+        permissions = [
+            ('apply_to_vacancy', 'Allows apply to any vacancy'),
+        ]

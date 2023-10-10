@@ -5,7 +5,7 @@ Forms package attributes, classes, and functions.
 from .company import AddAddressFrom, AddCompanyForm, CompanyProfileForm
 from .login import LoginForm
 from .registration import RegistrationForm
-from .vacancy import AddVacancyForm, SearchVacancyForm
+from .vacancy import AddVacancyForm, ApplyVacancyForm, SearchVacancyForm
 
 __all__ = [
     "AddVacancyForm",
@@ -15,4 +15,5 @@ __all__ = [
     "AddAddressFrom",
     "RegistrationForm",
     "LoginForm",
+    "ApplyVacancyForm",
 ]

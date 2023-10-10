@@ -8,6 +8,12 @@ from django.db import models
 from .base import BaseModel
 
 
+def response_directory_path(instance: "Response", filename: str) -> str:
+    """Provides a path to directory with files of specific responce."""
+
+    return f'response_attachments/user_{instance.user.pk}/vacancy_{instance.vacancy.pk}/{filename}'
+
+
 class ResponseStatus(BaseModel):
     """Describes the fields and attributes of the Response_status model in the database."""
 
@@ -29,8 +35,7 @@ class Response(BaseModel):
         to="Vacancy", on_delete=models.CASCADE, related_name='responses', related_query_name='response'
     )
     cover_note = models.CharField(max_length=500)
-    summary_link = models.CharField()
-    user_phone = models.CharField(max_length=30)
+    cv = models.FileField(upload_to=response_directory_path, null=True)
     response_status = models.ForeignKey(
         to="ResponseStatus", on_delete=models.CASCADE, related_name='responses', related_query_name='response'
     )

@@ -16,13 +16,16 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'company-list' %}">Companies</a>
               </li>
+              {% if perms.core.add_vacancy %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'add-vacancy' %}">Add Vacancy</a>
               </li>
+              {% endif %}
+              {% if perms.core.add_company %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'add-company' %}">Add Company</a>
               </li>
-              
+              {% endif %}
               <li class="nav-item">
                 <a class="nav-link" href="#">Profile</a>
               </li>
