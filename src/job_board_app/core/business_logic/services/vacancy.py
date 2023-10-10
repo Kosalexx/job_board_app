@@ -12,7 +12,7 @@ from core.business_logic.exceptions import CompanyNotExistsError
 from core.business_logic.services.common import replace_file_name_to_uuid
 from core.models import City, Company, Country, EmploymentFormat, Level, Response, Tag, Vacancy, WorkFormat
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 
 from .response import get_response_status_by_name
 
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def search_vacancies(search_filters: SearchVacancyDTO) -> list[Vacancy]:
+def search_vacancies(search_filters: SearchVacancyDTO) -> QuerySet:
     """Gets a list of vacancies from the database by entered filters."""
 
     vacancies = Vacancy.objects.select_related("level", "company").prefetch_related(
@@ -83,7 +83,7 @@ def search_vacancies(search_filters: SearchVacancyDTO) -> list[Vacancy]:
         },
     )
 
-    return list(vacancies)
+    return vacancies
 
 
 def create_vacancy(data: AddVacancyDTO) -> None:  # pylint: disable=too-many-locals

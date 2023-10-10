@@ -21,6 +21,7 @@ from core.business_logic.services import (
 )
 from core.presentation.common.converters import convert_data_from_form_to_dto
 from core.presentation.web.forms import AddVacancyForm, ApplyVacancyForm, SearchVacancyForm
+from core.presentation.web.pagination import CustomPagination, PageNotExists
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
@@ -61,7 +62,13 @@ def index_controller(request: HttpRequest) -> HttpResponse:
             countries=[('', 'All')] + COUNTRIES,
             data=request.GET,
         )
-        context = {"vacancies": vacancies, "form": form}
+        page_number = request.GET.get("page", 1)
+        paginator = CustomPagination(per_page=20)
+        try:
+            vacancies_paginated = paginator.paginate(data=vacancies, page_number=page_number)
+        except PageNotExists:
+            return HttpResponseBadRequest("Page with provided number doesn't exist.")
+        context = {"vacancies": vacancies_paginated.data, "form": form}
         logger.info(
             "Successfully rendered index page by entered filters.",
             extra={'Vacancies number': len(vacancies), "filter_data": filters_form.changed_data},
