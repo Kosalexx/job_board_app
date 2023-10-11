@@ -185,6 +185,8 @@ LOGGING = {
     },
 }
 
+LOG_LEVEL = os.environ["LOG_LEVEL"]
+
 # Confirmation code settings (needed for user confirmation by email)
 
 CONFIRMATION_CODE_LIVETIME = 3600
@@ -202,6 +204,24 @@ EMAIL_FROM = os.environ['EMAIL_FROM']
 
 SERVER_HOST = os.environ['SERVER_HOST']
 
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.environ["REDIS_URL"],
+    }
+}
+
 # REST_FRAMEWORK settings
 
-REST_FRAMEWORK = {'DEFAULT_THROTTLE_RATES': {'anon': '1/second', 'user': '1000/day'}}
+REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_RATES": {"user": "100/day"},
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}
+
+SWAGGER_SETTINGS = {
+    "LOGOUT_URL": "/logout/",
+    "LOGIN_URL": "/sing_in/",
+}
