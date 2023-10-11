@@ -22,6 +22,7 @@ from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_http_methods
 
 if TYPE_CHECKING:
@@ -62,6 +63,7 @@ def add_company_controller(request: HttpRequest) -> HttpResponse:
     return HttpResponseBadRequest("Incorrect HTTP method.")
 
 
+@cache_page(60)
 @require_http_methods(request_method_list=['GET'])
 def companies_list_controller(request: HttpRequest) -> HttpResponse:
     """Controller for the page with a list of all companies."""
