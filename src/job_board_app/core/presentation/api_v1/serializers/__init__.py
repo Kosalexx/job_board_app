@@ -1,7 +1,7 @@
 """
 API serializers package attributes, classes, and functions.
 """
-from .company import CompaniesListSerializer
+from .company import CompaniesListSerializer, CompanyExtendedInfoSerializer
 from .vacancy import SearchVacancySerializer, VacancyExtendedInfoSerializer, VacancyInfoSerializer
 
 __all__ = [
@@ -9,4 +9,5 @@ __all__ = [
     "VacancyInfoSerializer",
     "CompaniesListSerializer",
     "VacancyExtendedInfoSerializer",
+    "CompanyExtendedInfoSerializer",
 ]
