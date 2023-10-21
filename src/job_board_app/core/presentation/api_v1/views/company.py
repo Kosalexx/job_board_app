@@ -1,3 +1,6 @@
+"""
+API Views (controllers) for job_board_app that related with company logic.
+"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -13,6 +16,7 @@ if TYPE_CHECKING:
 
 @api_view(http_method_names=['GET'])
 def get_companies_api_controller(request: Request) -> Response:
+    """API controller that returns list of all vacancies."""
     companies = get_companies()
     companies_serializer = CompaniesListSerializer(companies, many=True)
     return Response(data=companies_serializer.data)

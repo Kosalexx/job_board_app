@@ -1,3 +1,6 @@
+"""
+"Core" app Company API serializers of job_board_app project.
+"""
 from rest_framework import serializers
 
 
