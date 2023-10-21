@@ -3,6 +3,28 @@
 <h1>{{ company.name }}</h1>
 <img src="{{ profile.logo.url }}" alt="">
 <p>Employees: {{ company.staff }}</p>
+<p>Email: {{ profile.email | urlize }}</p>
+<p>Founding year: {{ profile.founding_year }}</p>
+<p>Description: {{ profile.description }}</p>
+<p>Phone: {{ profile.phone }}</p>
+<p>Web site: {{ profile.website_link | urlize }}</p>
+{% if profile.linkedin_link %}
+<p>LinkedIn: {{ profile.linkedin_link | urlize }}</p>
+{% endif %}
+{% if profile.twitter_link %}
+<p>Twitter: {{ profile.twitter_link | urlize }}</p>
+{% endif %}
+<p> Business areas:
+    {% for area in company.business_area.all %}
+        * {{ area.name }}
+    {% endfor %} </p>
+<h3>Address:</h3>
+<p>Country: {{ profile.address.city.country.name }}
+</p>
+<p>City: {{ profile.address.city.name }}</p>
+<p>Street: {{ profile.address.street_name }}</p>
+<p>Home: {{ profile.address.home_number }}</p>
+<p>Office: {{ profile.address.office_number }}</p>
 <p>Open Positions: {{ company.vacancy__count }}</p>
 <h4>Vacancies:</h4>
     {% for vacancy in vacancies %}

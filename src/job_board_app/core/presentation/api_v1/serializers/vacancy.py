@@ -4,6 +4,14 @@
 
 from rest_framework import serializers
 
+from .common import (
+    CitySerializer,
+    EmploymentFormatSerializer,
+    LevelInfoSerializer,
+    TagsSerializer,
+    WorkFormatSerializer,
+)
+
 
 class SearchVacancySerializer(serializers.Serializer):
     """Validates and serializes data from the search vacancy filter."""
@@ -30,15 +38,8 @@ class SearchVacancySerializer(serializers.Serializer):
     city = serializers.CharField(max_length=30, trim_whitespace=True, required=False, default="")
 
 
-class CompanyInfoSerializer(serializers.Serializer):
+class VacancyCompanyInfoSerializer(serializers.Serializer):
     """Serializes company data from the database related to a specific vacancy."""
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-
-
-class LevelInfoSerializer(serializers.Serializer):
-    """Serializes level data from the database related to a specific vacancy."""
 
     id = serializers.IntegerField()
     name = serializers.CharField()
@@ -49,47 +50,11 @@ class VacancyInfoSerializer(serializers.Serializer):
 
     id = serializers.IntegerField()
     name = serializers.CharField()
-    company = CompanyInfoSerializer()
+    company = VacancyCompanyInfoSerializer()
     level = LevelInfoSerializer()
     experience = serializers.CharField()
     min_salary = serializers.IntegerField()
     max_salary = serializers.IntegerField()
-
-
-class EmploymentFormatSerializer(serializers.Serializer):
-    """Serializes employment_format data from the database."""
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-
-
-class WorkFormatSerializer(serializers.Serializer):
-    """Serializes work_format data from the database."""
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-
-
-class CountrySerializer(serializers.Serializer):
-    """Serializes country data from the database."""
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-
-
-class CitySerializer(serializers.Serializer):
-    """Serializes city data from the database."""
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    country = CountrySerializer()
-
-
-class TagsSerializer(serializers.Serializer):
-    """Serializes tags data form the database."""
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
 
 
 class VacancyExtendedInfoSerializer(VacancyInfoSerializer):
@@ -100,3 +65,4 @@ class VacancyExtendedInfoSerializer(VacancyInfoSerializer):
     work_format = WorkFormatSerializer(many=True, read_only=True)
     city = CitySerializer(many=True, read_only=True)
     tags = TagsSerializer(many=True, read_only=True)
+    attachment = serializers.CharField()

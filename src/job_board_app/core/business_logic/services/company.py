@@ -144,7 +144,13 @@ def get_company_by_id(company_id: int) -> Company:
     """Gets a specific Company data from the database by entered company_id."""
 
     company: Company = (
-        Company.objects.prefetch_related('business_area')
+        Company.objects.prefetch_related('business_area', 'vacancies')
+        .select_related(
+            'company_profile',
+            'company_profile__address',
+            'company_profile__address__city',
+            'company_profile__address__city__country',
+        )
         .annotate(vacancy__count=Count("vacancy__id"))
         .get(pk=company_id)
     )
@@ -155,7 +161,9 @@ def get_company_by_id(company_id: int) -> Company:
 def get_company_profile_by_id(company_id: int) -> CompanyProfile:
     """Gets a specific Company_profile data from the database by entered company_id."""
 
-    profile: CompanyProfile = CompanyProfile.objects.select_related('address', 'company').get(pk=company_id)
+    profile: CompanyProfile = CompanyProfile.objects.select_related(
+        'address', 'company', 'address__city', 'address__city__country'
+    ).get(pk=company_id)
     logger.info(
         'Successfully got company profile by company_id.',
         extra={'company_id': str(company_id), 'company_name': profile.company.name},

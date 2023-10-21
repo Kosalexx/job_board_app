@@ -29,15 +29,13 @@ class CompanyProfile(BaseModel):
     address = models.ForeignKey(
         to='Address',
         on_delete=models.CASCADE,
-        related_name='company_profiles',
-        related_query_name='company_profile',
+        related_name='company_profile',
         default=None,
     )
     company = models.OneToOneField(
         to='Company',
         on_delete=models.CASCADE,
-        related_name='company_profiles',
-        related_query_name='company_profile',
+        related_name='company_profile',
         primary_key=True,
     )
 

@@ -21,3 +21,7 @@ class InvalidAuthCredentialsError(Exception):
 
 class UserAlreadyExistsError(Exception):
     """Exception that raises when user already exist in the database."""
+
+
+class VacancyNotExistsError(Exception):
+    """Exception that raises when vacancy with entered name(or id) does not exist in the database."""
