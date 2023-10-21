@@ -19,7 +19,7 @@ from core.business_logic.services import (
     get_work_formats,
     search_vacancies,
 )
-from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.common.converters import convert_data_from_request_to_dto
 from core.presentation.web.forms import AddVacancyForm, ApplyVacancyForm, SearchVacancyForm
 from core.presentation.web.pagination import CustomPagination, PageNotExists
 from django.contrib.auth.decorators import login_required, permission_required
@@ -53,7 +53,7 @@ def index_controller(request: HttpRequest) -> HttpResponse:
     )
     logger.info('index_page_log')
     if filters_form.is_valid():
-        search_filters = convert_data_from_form_to_dto(SearchVacancyDTO, filters_form.cleaned_data)
+        search_filters = convert_data_from_request_to_dto(SearchVacancyDTO, filters_form.cleaned_data)
         vacancies = search_vacancies(search_filters=search_filters)
         form = SearchVacancyForm(
             levels=[('', 'All')] + LEVELS,
@@ -101,7 +101,7 @@ def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
             files=request.FILES,
         )
         if form.is_valid():
-            data = convert_data_from_form_to_dto(AddVacancyDTO, form.cleaned_data)
+            data = convert_data_from_request_to_dto(AddVacancyDTO, form.cleaned_data)
             logger.info(
                 'Form have been validated. The vacancy will be added to the database.',
                 extra={
@@ -160,7 +160,7 @@ def apply_vacancy_controller(request: HttpRequest, vacancy_id: int) -> HttpRespo
     else:
         form = ApplyVacancyForm(request.POST, files=request.FILES)
         if form.is_valid():
-            data = convert_data_from_form_to_dto(ApplyVacancyDTO, form.cleaned_data)
+            data = convert_data_from_request_to_dto(ApplyVacancyDTO, form.cleaned_data)
             data.user = request.user
             data.vacancy = get_vacancy_by_id(vacancy_id=vacancy_id).vacancy
             apply_to_vacancy(data=data)

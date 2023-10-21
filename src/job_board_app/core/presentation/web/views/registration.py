@@ -13,7 +13,7 @@ from core.business_logic.exceptions import (
     UserAlreadyExistsError,
 )
 from core.business_logic.services import confirm_user_registration, create_user, get_groups
-from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.common.converters import convert_data_from_request_to_dto
 from core.presentation.web.forms import RegistrationForm
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
@@ -37,7 +37,7 @@ def registration_controller(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = RegistrationForm(ROLES, request.POST)
         if form.is_valid():
-            received_data = convert_data_from_form_to_dto(dto=RegistrationDTO, data_from_form=form.cleaned_data)
+            received_data = convert_data_from_request_to_dto(dto=RegistrationDTO, data_from_request=form.cleaned_data)
             try:
                 create_user(data=received_data)
                 context_2 = {"new_email": received_data.email}

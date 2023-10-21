@@ -16,7 +16,7 @@ from core.business_logic.services import (
     get_countries,
     get_vacancies_by_company_id,
 )
-from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.common.converters import convert_data_from_request_to_dto
 from core.presentation.web.forms import AddAddressFrom, AddCompanyForm, CompanyProfileForm
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
@@ -50,9 +50,9 @@ def add_company_controller(request: HttpRequest) -> HttpResponse:
         profile_form = CompanyProfileForm(request.POST, request.FILES, prefix='profile')
         address_form = AddAddressFrom(COUNTRIES, request.POST, prefix='address')
         if company_form.is_valid() and profile_form.is_valid() and address_form.is_valid():
-            company_data = convert_data_from_form_to_dto(AddCompanyDTO, company_form.cleaned_data)
-            profile_data = convert_data_from_form_to_dto(AddCompanyProfileDTO, profile_form.cleaned_data)
-            address_data = convert_data_from_form_to_dto(AddAddressDTO, address_form.cleaned_data)
+            company_data = convert_data_from_request_to_dto(AddCompanyDTO, company_form.cleaned_data)
+            profile_data = convert_data_from_request_to_dto(AddCompanyProfileDTO, profile_form.cleaned_data)
+            address_data = convert_data_from_request_to_dto(AddAddressDTO, address_form.cleaned_data)
             logger.info('The forms have been validated. The company will be added to the database.')
             create_company(company_data=company_data, profile_data=profile_data, address_data=address_data)
         else:

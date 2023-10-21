@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from core.business_logic.dto import LoginDTO
 from core.business_logic.exceptions import InvalidAuthCredentialsError
 from core.business_logic.services import authenticate_user
-from core.presentation.common.converters import convert_data_from_form_to_dto
+from core.presentation.common.converters import convert_data_from_request_to_dto
 from core.presentation.web.forms import LoginForm
 from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -34,7 +34,7 @@ def login_controller(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            data = convert_data_from_form_to_dto(dto=LoginDTO, data_from_form=form.cleaned_data)
+            data = convert_data_from_request_to_dto(dto=LoginDTO, data_from_request=form.cleaned_data)
 
             try:
                 user = authenticate_user(data=data)

@@ -29,8 +29,8 @@ T = TypeVar(
 )
 
 
-def convert_data_from_form_to_dto(dto: type[T], data_from_form: dict) -> T:
+def convert_data_from_request_to_dto(dto: type[T], data_from_request: dict) -> T:
     """Converts data form form to the DTO."""
 
-    result: T = from_dict(dto, data_from_form)
+    result: T = from_dict(dto, data_from_request)
     return result
