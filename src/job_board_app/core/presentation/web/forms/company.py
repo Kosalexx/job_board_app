@@ -9,6 +9,7 @@ from core.presentation.common.validators import (
     ValidateMaxAreasCount,
     validate_swear_words_in_company_name,
 )
+from core.presentation.web.validators import ValidateWebData
 from django import forms
 
 
@@ -16,11 +17,14 @@ class AddCompanyForm(forms.Form):
     """Form for adding a new company."""
 
     name = forms.CharField(
-        label="Company name", max_length="30", strip=True, validators=[validate_swear_words_in_company_name]
+        label="Company name",
+        max_length="30",
+        strip=True,
+        validators=[ValidateWebData(validate_swear_words_in_company_name)],
     )
     staff = forms.IntegerField(label="Employees number", min_value=1)
     business_area = forms.CharField(
-        label="Business areas", widget=forms.Textarea, validators=[ValidateMaxAreasCount(max_count=5)]
+        label="Business areas", widget=forms.Textarea, validators=[ValidateWebData(ValidateMaxAreasCount(max_count=5))]
     )
 
 
@@ -31,7 +35,10 @@ class CompanyProfileForm(forms.Form):
         label='Logo',
         allow_empty_file=False,
         required=False,
-        validators=[ValidateImageExtensions(['png', 'jpeg']), ValidateFileSize(max_size=5_000_000)],
+        validators=[
+            ValidateWebData(ValidateImageExtensions(['png', 'jpeg'])),
+            ValidateWebData(ValidateFileSize(max_size=5_000_000)),
+        ],
     )
     email = forms.EmailField(label='Email', required=True)
     founding_year = forms.IntegerField(min_value=1800, required=True)
