@@ -50,7 +50,7 @@ class TagsSerializer(serializers.Serializer):
 class AddressSerializer(serializers.Serializer):
     """Serializes data about address from the database."""
 
-    id = serializers.ImageField()
+    id = serializers.IntegerField()
     street_name = serializers.CharField()
     home_number = serializers.IntegerField()
     office_number = serializers.IntegerField()

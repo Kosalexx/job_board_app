@@ -4,6 +4,7 @@
 from typing import Any
 
 from core.presentation.common.validators import ValidateFileExtensions, ValidateFileSize, ValidateMaxTagCount
+from core.presentation.web.validators import ValidateWebData
 from django import forms
 
 
@@ -21,12 +22,17 @@ class AddVacancyForm(forms.Form):
     work_format = forms.MultipleChoiceField(label='Work formats', widget=forms.CheckboxSelectMultiple)
     country = forms.ChoiceField(label='Country')
     city = forms.CharField(label='Available cities', widget=forms.Textarea, required=True)
-    tags = forms.CharField(label="Tags", widget=forms.Textarea, validators=[ValidateMaxTagCount(max_count=5)])
+    tags = forms.CharField(
+        label="Tags", widget=forms.Textarea, validators=[ValidateWebData(ValidateMaxTagCount(max_count=5))]
+    )
     attachment = forms.FileField(
         label='Attachment',
         allow_empty_file=False,
         required=False,
-        validators=[ValidateFileExtensions(['pdf']), ValidateFileSize(max_size=5_000_000)],
+        validators=[
+            ValidateWebData(ValidateFileExtensions(['pdf'])),
+            ValidateWebData(ValidateFileSize(max_size=5_000_000)),
+        ],
     )
 
     def __init__(
@@ -85,6 +91,9 @@ class ApplyVacancyForm(forms.Form):
     cv = forms.FileField(
         label='CV',
         allow_empty_file=False,
-        validators=[ValidateFileExtensions(['pdf']), ValidateFileSize(max_size=5_000_000)],
+        validators=[
+            ValidateWebData(ValidateFileExtensions(['pdf'])),
+            ValidateWebData(ValidateFileSize(max_size=5_000_000)),
+        ],
         widget=forms.FileInput(attrs={"class": "form-control"}),
     )

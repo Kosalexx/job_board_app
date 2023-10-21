@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 @api_view(http_method_names=['GET'])
-def get_vacancies_api_controller(request: Request) -> Response:
+def vacancies_api_controller(request: Request) -> Response:
     """API controller that returns list of all vacancies."""
     filters_serializer = SearchVacancySerializer(data=request.query_params)
     if filters_serializer.is_valid():
@@ -40,7 +40,7 @@ def get_vacancies_api_controller(request: Request) -> Response:
 
 
 @api_view(http_method_names=['GET'])
-def get_vacancy_api_controller(request: Request, vacancy_id: int) -> Response:
+def vacancy_api_controller(request: Request, vacancy_id: int) -> Response:
     """API controller that returns specific vacancy with entered id."""
 
     try:

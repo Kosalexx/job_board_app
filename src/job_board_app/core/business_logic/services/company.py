@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def create_company(  # pylint: disable=too-many-locals
     company_data: AddCompanyDTO, profile_data: AddCompanyProfileDTO, address_data: AddAddressDTO
-) -> None:
+) -> int:
     """Records the added company data in the database."""
 
     with transaction.atomic():
@@ -130,6 +130,8 @@ def create_company(  # pylint: disable=too-many-locals
                 "twitter_link": profile_data.twitter_link,
             },
         )
+        company_id: int = created_company.pk
+        return company_id
 
 
 def get_companies() -> list[Company]:
