@@ -86,7 +86,7 @@ def search_vacancies(search_filters: SearchVacancyDTO) -> QuerySet:
     return vacancies
 
 
-def create_vacancy(data: AddVacancyDTO) -> None:  # pylint: disable=too-many-locals
+def create_vacancy(data: AddVacancyDTO) -> int:  # pylint: disable=too-many-locals
     """Records the added Vacancy data in the database."""
 
     with transaction.atomic():
@@ -167,6 +167,8 @@ def create_vacancy(data: AddVacancyDTO) -> None:  # pylint: disable=too-many-loc
                 "cities": city_list,
             },
         )
+        vacancy_id: int = created_vacancy.pk
+        return vacancy_id
 
 
 def get_vacancy_by_id(
