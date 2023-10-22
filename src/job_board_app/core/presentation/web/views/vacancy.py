@@ -42,6 +42,7 @@ LEVELS: list[tuple[str, str]] = get_levels()
 
 
 @require_http_methods(request_method_list=["GET"])
+@login_required
 def index_controller(request: HttpRequest) -> HttpResponse:
     """Controller for index(main) page."""
     filters_form = SearchVacancyForm(
@@ -78,6 +79,7 @@ def index_controller(request: HttpRequest) -> HttpResponse:
     return render(request=request, template_name="index.html", context=context)
 
 
+@login_required
 @permission_required(["core.add_vacancy"])
 @transaction.non_atomic_requests
 @require_http_methods(request_method_list=["GET", "POST"])
@@ -126,6 +128,7 @@ def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
     return HttpResponseBadRequest("Incorrect HTTP method.")
 
 
+@login_required
 @require_http_methods(request_method_list=['GET'])
 def get_vacancy_controller(request: HttpRequest, vacancy_id: int) -> HttpResponse:
     """Controller for specific vacancy."""

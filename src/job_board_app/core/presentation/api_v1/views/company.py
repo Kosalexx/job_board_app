@@ -15,9 +15,13 @@ from core.presentation.api_v1.serializers import (
     CompanyExtendedInfoSerializer,
 )
 from core.presentation.common.converters import convert_data_from_request_to_dto
-from rest_framework.decorators import api_view
+from django.contrib.auth.decorators import permission_required
+from django.views.decorators.cache import cache_page
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from rest_framework.throttling import UserRateThrottle
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -27,6 +31,9 @@ logger = getLogger(__name__)
 
 
 @api_view(http_method_names=['GET', 'POST'])
+@cache_page(10)
+@permission_required(["core.add_company"])
+@permission_classes([IsAuthenticated])
 def companies_api_controller(request: Request) -> Response:
     """API controller that returns list of all vacancies."""
     if request.method == 'GET':
@@ -52,6 +59,8 @@ def companies_api_controller(request: Request) -> Response:
 
 
 @api_view(http_method_names=['GET'])
+@throttle_classes([UserRateThrottle])
+@permission_classes([IsAuthenticated])
 def company_api_controller(request: Request, company_id: int) -> Response:
     """API controller that returns specific company with entered id."""
 
