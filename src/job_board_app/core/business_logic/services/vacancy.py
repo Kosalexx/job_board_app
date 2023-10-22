@@ -8,7 +8,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import VacancyDataDTO
-from core.business_logic.exceptions import CompanyNotExistsError
+from core.business_logic.exceptions import CompanyNotExistsError, VacancyNotExistsError
 from core.business_logic.services.common import replace_file_name_to_uuid
 from core.models import City, Company, Country, EmploymentFormat, Level, Response, Tag, Vacancy, WorkFormat
 from django.db import transaction
@@ -176,24 +176,29 @@ def get_vacancy_by_id(
 ) -> VacancyDataDTO:
     """Gets a specific Vacancy data from the database by entered vacancy_id."""
 
-    vacancy = (
-        Vacancy.objects.select_related("level", "company")
-        .prefetch_related("tags", "employment_format", "work_format", 'city')
-        .annotate(num_work_format=Count("work_format", distinct=True))
-        .get(pk=vacancy_id)
-    )
-    tags = vacancy.tags.all()
-    employment_format = vacancy.employment_format.all()
-    work_format = vacancy.work_format.all()
-    city = vacancy.city.all()
-    logger.info('Successfully got vacancy data.', extra={'vacancy_id': str(vacancy_id), 'vacancy_name': vacancy.name})
-    result = VacancyDataDTO(
-        vacancy=vacancy,
-        tags=list(tags),
-        employment_format=list(employment_format),
-        work_format=list(work_format),
-        city=list(city),
-    )
+    try:
+        vacancy = (
+            Vacancy.objects.select_related("level", "company")
+            .prefetch_related("tags", "employment_format", "work_format", 'city')
+            .annotate(num_work_format=Count("work_format", distinct=True))
+            .get(pk=vacancy_id)
+        )
+        tags = vacancy.tags.all()
+        employment_format = vacancy.employment_format.all()
+        work_format = vacancy.work_format.all()
+        city = vacancy.city.all()
+        logger.info(
+            'Successfully got vacancy data.', extra={'vacancy_id': str(vacancy_id), 'vacancy_name': vacancy.name}
+        )
+        result = VacancyDataDTO(
+            vacancy=vacancy,
+            tags=list(tags),
+            employment_format=list(employment_format),
+            work_format=list(work_format),
+            city=list(city),
+        )
+    except Vacancy.DoesNotExist:
+        raise VacancyNotExistsError
     return result
 
 

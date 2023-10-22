@@ -55,3 +55,7 @@ class AddressSerializer(serializers.Serializer):
     home_number = serializers.IntegerField()
     office_number = serializers.IntegerField()
     city = CitySerializer()
+
+
+class ErrorSerializer(serializers.Serializer):
+    message = serializers.CharField()

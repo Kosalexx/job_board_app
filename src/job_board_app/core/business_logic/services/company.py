@@ -7,6 +7,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from core.business_logic.exceptions import CompanyNotExistsError
 from core.models import Address, BusinessArea, City, Company, CompanyProfile, Country, Vacancy
 from django.db import transaction
 from django.db.models import Count
@@ -145,18 +146,22 @@ def get_companies() -> list[Company]:
 def get_company_by_id(company_id: int) -> Company:
     """Gets a specific Company data from the database by entered company_id."""
 
-    company: Company = (
-        Company.objects.prefetch_related('business_area', 'vacancies')
-        .select_related(
-            'company_profile',
-            'company_profile__address',
-            'company_profile__address__city',
-            'company_profile__address__city__country',
+    try:
+        company: Company = (
+            Company.objects.prefetch_related('business_area', 'vacancies')
+            .select_related(
+                'company_profile',
+                'company_profile__address',
+                'company_profile__address__city',
+                'company_profile__address__city__country',
+            )
+            .annotate(vacancy__count=Count("vacancy__id"))
+            .get(pk=company_id)
         )
-        .annotate(vacancy__count=Count("vacancy__id"))
-        .get(pk=company_id)
-    )
-    logger.info('Successfully got company.', extra={'company_id': str(company_id), 'company_name': company.name})
+        logger.info('Successfully got company.', extra={'company_id': str(company_id), 'company_name': company.name})
+    except Company.DoesNotExist:
+        raise CompanyNotExistsError
+
     return company
 
 

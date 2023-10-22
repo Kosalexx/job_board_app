@@ -25,7 +25,6 @@ class SearchVacancySerializer(serializers.Serializer):
     min_salary = serializers.IntegerField(min_value=0, required=False, default=None)
     max_salary = serializers.IntegerField(min_value=0, required=False, default=None)
     tag = serializers.CharField(required=False, default="")
-    level = serializers.CharField(max_length=30, trim_whitespace=True, required=False, default="")
     employment_format = serializers.ListField(
         child=serializers.CharField(max_length=30, trim_whitespace=True, required=False, default=""),
         required=False,
@@ -84,7 +83,7 @@ class AddVacancySerializer(serializers.Serializer):
     work_format = serializers.ListField(child=serializers.CharField(max_length=30, trim_whitespace=True))
     country = serializers.CharField(max_length=30, trim_whitespace=True)
     city = serializers.CharField(max_length=30, trim_whitespace=True)
-    tags = serializers.CharField(trim_whitespace=True)
+    tags = serializers.CharField(trim_whitespace=True, required=False)
     attachment = serializers.FileField(
         allow_empty_file=False,
         validators=[
@@ -93,3 +92,19 @@ class AddVacancySerializer(serializers.Serializer):
         ],
         required=False,
     )
+
+
+class AddVacancyResponseSerializer(serializers.Serializer):
+    """Serializes response message about successfully vacancy creation."""
+
+    message = serializers.CharField()
+    vacancy_id = serializers.IntegerField()
+
+
+class VacancyInfoPaginatedResponseSerializer(serializers.Serializer):
+    """Serializes paginated vacancy info response message."""
+
+    count = serializers.IntegerField()
+    next = serializers.CharField()
+    previous = serializers.CharField()
+    results = VacancyInfoSerializer(many=True)
