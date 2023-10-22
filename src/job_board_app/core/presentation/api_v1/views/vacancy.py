@@ -17,7 +17,9 @@ from core.presentation.api_v1.serializers import (
     VacancyInfoSerializer,
 )
 from core.presentation.common.converters import convert_data_from_request_to_dto
-from rest_framework.decorators import api_view
+from django.contrib.auth.decorators import permission_required
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
@@ -29,6 +31,8 @@ logger = getLogger(__name__)
 
 
 @api_view(http_method_names=['GET', 'POST'])
+@permission_required(["core.add_vacancy"])
+@permission_classes([IsAuthenticated])
 def vacancies_api_controller(request: Request) -> Response:
     """API controller that returns list of all vacancies."""
     if request.method == 'GET':
@@ -58,6 +62,7 @@ def vacancies_api_controller(request: Request) -> Response:
 
 
 @api_view(http_method_names=['GET'])
+@permission_classes([IsAuthenticated])
 def vacancy_api_controller(request: Request, vacancy_id: int) -> Response:
     """API controller that returns specific vacancy with entered id."""
 

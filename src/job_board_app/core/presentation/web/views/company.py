@@ -18,7 +18,7 @@ from core.business_logic.services import (
 )
 from core.presentation.common.converters import convert_data_from_request_to_dto
 from core.presentation.web.forms import AddAddressFrom, AddCompanyForm, CompanyProfileForm
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -65,6 +65,7 @@ def add_company_controller(request: HttpRequest) -> HttpResponse:
 
 @cache_page(60)
 @require_http_methods(request_method_list=['GET'])
+@login_required
 def companies_list_controller(request: HttpRequest) -> HttpResponse:
     """Controller for the page with a list of all companies."""
     companies = get_companies()
@@ -74,6 +75,7 @@ def companies_list_controller(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(request_method_list=['GET'])
+@login_required
 def get_company_controller(request: HttpRequest, company_id: int) -> HttpResponse:
     """Controller for specific company."""
     company = get_company_by_id(company_id=company_id)

@@ -25,5 +25,5 @@ def logout_controller(request: HttpRequest) -> HttpResponse:
         username = request.user.username
         logout(request=request)
         logger.info('Successful logout.', extra={'user': username})
-        return redirect(to='index')
+        return redirect(to='login')
     return HttpResponseBadRequest("Incorrect HTTP method.")

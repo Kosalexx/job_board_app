@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "rest_framework",
     # internal
     'core',
+    # 3-rd party
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -215,7 +217,7 @@ CACHES = {
 # REST_FRAMEWORK settings
 
 REST_FRAMEWORK = {
-    "DEFAULT_THROTTLE_RATES": {"user": "100/day"},
+    "DEFAULT_THROTTLE_RATES": {"user": "1000/day"},
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
     ],
@@ -223,5 +225,5 @@ REST_FRAMEWORK = {
 
 SWAGGER_SETTINGS = {
     "LOGOUT_URL": "/logout/",
-    "LOGIN_URL": "/sing_in/",
+    "LOGIN_URL": "/signin/",
 }
