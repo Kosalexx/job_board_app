@@ -5,12 +5,20 @@ Services and business logic for working with data associated with Vacancy entity
 from __future__ import annotations
 
 import logging
+import re
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import VacancyDataDTO
-from core.business_logic.exceptions import CompanyNotExistsError, VacancyNotExistsError
+from core.business_logic.exceptions import (
+    CompanyNotExistsError,
+    CountryNotExistError,
+    EmploymentFormatNotExistError,
+    VacancyNotExistsError,
+    WorkFormatNotExistError,
+)
 from core.business_logic.services.common import replace_file_name_to_uuid
 from core.models import City, Company, Country, EmploymentFormat, Level, Response, Tag, Vacancy, WorkFormat
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Count, QuerySet
 
@@ -18,6 +26,7 @@ from .response import get_response_status_by_name
 
 if TYPE_CHECKING:
     from core.business_logic.dto import AddVacancyDTO, ApplyVacancyDTO, SearchVacancyDTO
+    from core.business_logic.interfaces import QRApiAdapterProtocol
 
 
 logger = logging.getLogger(__name__)
@@ -41,6 +50,9 @@ def search_vacancies(search_filters: SearchVacancyDTO) -> QuerySet:
 
     if search_filters.experience:
         vacancies = vacancies.filter(experience__icontains=search_filters.experience)
+
+    if search_filters.description:
+        vacancies = vacancies.filter(description__icontains=search_filters.description)
 
     if search_filters.min_salary:
         vacancies = vacancies.filter(min_salary__gte=search_filters.min_salary)
@@ -86,28 +98,33 @@ def search_vacancies(search_filters: SearchVacancyDTO) -> QuerySet:
     return vacancies
 
 
-def create_vacancy(data: AddVacancyDTO) -> int:  # pylint: disable=too-many-locals
+def create_vacancy(data: AddVacancyDTO, qr_adapter: QRApiAdapterProtocol) -> int:  # pylint: disable=too-many-locals
     """Records the added Vacancy data in the database."""
 
     with transaction.atomic():
-        tags: list[str] = data.tags.split("\r\n")
+        tags: list[str] = re.split("[ \r\n]+", data.tags)
         tags_list: list[Tag] = []
         for tag in tags:
             try:
                 tag_from_db = Tag.objects.get(name=tag.lower())
-            except Tag.DoesNotExist as err:
-                logger.warning("Tag doesn't exist.", extra={'Tag': tag}, exc_info=err)
+            except Tag.DoesNotExist:
+                logger.warning("Tag doesn't exist.", extra={'Tag': tag})
                 tag_from_db = Tag.objects.create(name=tag.lower())
                 logger.info('Handled error and successfully created tag in db.', extra={'tag': tag})
             tags_list.append(tag_from_db)
         try:
             company = Company.objects.get(name=data.company_name)
-        except Company.DoesNotExist as exc:
-            logger.warning("Company doesn't exists.", extra={'company': data.company_name}, exc_info=exc)
-            raise CompanyNotExistsError from exc
+        except Company.DoesNotExist:
+            logger.warning("Company doesn't exists.", extra={'company': data.company_name})
+            raise CompanyNotExistsError
 
-        cities: list[str] = data.city.split('\r\n')
+        cities: list[str] = re.split("[ \r\n]+", data.city)
         city_list: list[City] = []
+        try:
+            country_from_db = Country.objects.get(name=data.country)
+        except Country.DoesNotExist:
+            logger.error("Country doesn't exists.", extra={'country': data.country})
+            raise CountryNotExistError
         for city in cities:
             try:
                 city_from_db = (
@@ -115,17 +132,25 @@ def create_vacancy(data: AddVacancyDTO) -> int:  # pylint: disable=too-many-loca
                     .filter(country__name=data.country)
                     .get(name=city.capitalize())
                 )
-            except City.DoesNotExist as err:
-                logger.warning("City doesn't exists.", extra={'city': city}, exc_info=err)
-                city_from_db = City.objects.create(
-                    name=city.capitalize(), country=Country.objects.get(name=data.country)
-                )
+            except City.DoesNotExist:
+                logger.warning("City doesn't exists.", extra={'city': city})
+                city_from_db = City.objects.create(name=city.capitalize(), country=country_from_db)
                 logger.info('Handled error and successfully created city in db.', extra={'city': city})
             city_list.append(city_from_db)
-        employment_formats_list: list[EmploymentFormat] = [
-            EmploymentFormat.objects.get(name=employ_format) for employ_format in data.employment_format
-        ]
-        work_formats_list: list[WorkFormat] = [WorkFormat.objects.get(name=work_form) for work_form in data.work_format]
+        try:
+            employment_formats_list: list[EmploymentFormat] = [
+                EmploymentFormat.objects.get(name=employ_format) for employ_format in data.employment_format
+            ]
+        except EmploymentFormat.DoesNotExist:
+            logger.error("Employment format doesn't exists.", extra={'employment_format': data.employment_format})
+            raise EmploymentFormatNotExistError
+        try:
+            work_formats_list: list[WorkFormat] = [
+                WorkFormat.objects.get(name=work_form) for work_form in data.work_format
+            ]
+        except WorkFormat.DoesNotExist:
+            logger.error("Work format doesn't exists.", extra={'work_format': data.work_format})
+            raise WorkFormatNotExistError
         if data.attachment is not None:
             file = replace_file_name_to_uuid(data.attachment)
         else:
@@ -167,6 +192,10 @@ def create_vacancy(data: AddVacancyDTO) -> int:  # pylint: disable=too-many-loca
                 "cities": city_list,
             },
         )
+        qr_data = f"{settings.SERVER_HOST}/vacancy/{created_vacancy}/"
+        qr_code = qr_adapter.get_qr(data=qr_data)
+        created_vacancy.qr_code = qr_code
+        created_vacancy.save()
         vacancy_id: int = created_vacancy.pk
         return vacancy_id
 

@@ -67,6 +67,7 @@ class VacancyExtendedInfoSerializer(VacancyInfoSerializer):
     city = CitySerializer(many=True, read_only=True)
     tags = TagsSerializer(many=True, read_only=True)
     attachment = serializers.CharField()
+    qr_code = serializers.CharField()
 
 
 class AddVacancySerializer(serializers.Serializer):

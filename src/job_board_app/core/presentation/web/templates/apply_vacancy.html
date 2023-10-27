@@ -2,6 +2,7 @@
 {% block content %}
     <h1>Apply vacancy</h1>
     <form method="POST" action="{% url 'apply-vacancy' vacancy_id=vacancy_id %}" enctype="multipart/form-data">
+        <p style="color:red">{{ err_message }}<p></p>
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Submit"><br><br>

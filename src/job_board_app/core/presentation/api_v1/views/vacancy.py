@@ -7,8 +7,15 @@ from logging import getLogger
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import AddVacancyDTO, SearchVacancyDTO
-from core.business_logic.exceptions import VacancyNotExistsError
+from core.business_logic.exceptions import (
+    CompanyNotExistsError,
+    CountryNotExistError,
+    EmploymentFormatNotExistError,
+    VacancyNotExistsError,
+    WorkFormatNotExistError,
+)
 from core.business_logic.services import create_vacancy, get_vacancy_by_id, search_vacancies
+from core.business_logic.services.common import QRApiAdapter
 from core.presentation.api_v1.pagination import APIPaginator
 from core.presentation.api_v1.serializers import (
     AddVacancyResponseSerializer,
@@ -128,7 +135,21 @@ def vacancies_api_controller(request: Request) -> Response:
         add_vacancy_serializer = AddVacancySerializer(data=request.data)
         if add_vacancy_serializer.is_valid():
             vacancy_dto = convert_data_from_request_to_dto(AddVacancyDTO, add_vacancy_serializer.validated_data)
-            vacancy_id = create_vacancy(data=vacancy_dto)
+            try:
+                qr_adapter = QRApiAdapter(base_url="https://api.qrserver.com/v1/")
+                vacancy_id = create_vacancy(data=vacancy_dto, qr_adapter=qr_adapter)
+            except CompanyNotExistsError:
+                error_data = {"message": "Company with provided name does not exist in the database."}
+                return Response(data=error_data, status=HTTP_400_BAD_REQUEST)
+            except CountryNotExistError:
+                error_data = {"message": "Country with provided name does not exist in the database."}
+                return Response(data=error_data, status=HTTP_400_BAD_REQUEST)
+            except EmploymentFormatNotExistError:
+                error_data = {"message": "Employment format with provided name does not exist in the database."}
+                return Response(data=error_data, status=HTTP_400_BAD_REQUEST)
+            except WorkFormatNotExistError:
+                error_data = {"message": "Work format with provided name does not exist in the database."}
+                return Response(data=error_data, status=HTTP_400_BAD_REQUEST)
         else:
             logger.warning(f'The forms have not been validated. Errors: {add_vacancy_serializer.errors}')
             return Response(data=add_vacancy_serializer.errors, status=HTTP_400_BAD_REQUEST)
