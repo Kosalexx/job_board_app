@@ -2,6 +2,7 @@
 {% block content %}
     <h1>Add Company</h1>
     <form method="POST" action="{% url 'add-company' %}" enctype="multipart/form-data">
+        <p style="color:red">{{ err_message }}<p></p>
         {% csrf_token %}
         {{ company_form }}
         <h4>Company profile:</h4>

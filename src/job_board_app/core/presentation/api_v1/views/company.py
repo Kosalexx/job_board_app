@@ -7,7 +7,7 @@ from logging import getLogger
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import AddAddressDTO, AddCompanyDTO, AddCompanyProfileDTO
-from core.business_logic.exceptions import CompanyNotExistsError
+from core.business_logic.exceptions import CompanyAlreadyExistsError, CompanyNotExistsError, CountryNotExistError
 from core.business_logic.services import create_company, get_companies, get_company_by_id
 from core.presentation.api_v1.serializers import (
     AddCompanyResponseSerializer,
@@ -46,7 +46,7 @@ logger = getLogger(__name__)
         openapi.Parameter(name="logo", in_=openapi.IN_FORM, type=openapi.TYPE_FILE),
         openapi.Parameter(name="email", in_=openapi.IN_FORM, type=openapi.TYPE_STRING, required=True),
         openapi.Parameter(name="founding_year", in_=openapi.IN_FORM, type=openapi.TYPE_INTEGER, required=True),
-        openapi.Parameter(name="description", in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
+        openapi.Parameter(name="description", in_=openapi.IN_FORM, type=openapi.TYPE_STRING, required=True),
         openapi.Parameter(name="phone", in_=openapi.IN_FORM, type=openapi.TYPE_STRING, required=True),
         openapi.Parameter(name="website_link", in_=openapi.IN_FORM, type=openapi.TYPE_STRING, required=True),
         openapi.Parameter(name="linkedin_link", in_=openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -90,9 +90,16 @@ def companies_api_controller(request: Request) -> Response:
                 AddCompanyProfileDTO, add_company_serializer.validated_data
             )
             address_dto = convert_data_from_request_to_dto(AddAddressDTO, add_company_serializer.validated_data)
-            company_id = create_company(
-                company_data=company_dto, profile_data=company_profile_dto, address_data=address_dto
-            )
+            try:
+                company_id = create_company(
+                    company_data=company_dto, profile_data=company_profile_dto, address_data=address_dto
+                )
+            except CompanyAlreadyExistsError:
+                error_data = {"message": "Company with provided name already exist in the database."}
+                return Response(data=error_data, status=HTTP_400_BAD_REQUEST)
+            except CountryNotExistError:
+                error_data = {"message": "Country with provided name does not exist in the database."}
+                return Response(data=error_data, status=HTTP_400_BAD_REQUEST)
         else:
             logger.warning(f'The forms have not been validated. Errors: {add_company_serializer.errors}')
             return Response(data=add_company_serializer.errors, status=HTTP_400_BAD_REQUEST)

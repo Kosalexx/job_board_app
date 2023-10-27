@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>{{ company.name }}</h1>
-<img src="{{ profile.logo.url }}" alt="">
+{% if profile.logo %}
+    <img src="{{ profile.logo.url }}" alt="">
+{% endif %}
 <p>Employees: {{ company.staff }}</p>
 <p>Email: {{ profile.email | urlize }}</p>
 <p>Founding year: {{ profile.founding_year }}</p>

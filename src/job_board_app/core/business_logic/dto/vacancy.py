@@ -37,7 +37,7 @@ class AddVacancyDTO:
     name: str
     company_name: str
     level: str
-    experience: str
+    experience: str | None
     description: str | None
     min_salary: int | None
     max_salary: int | None

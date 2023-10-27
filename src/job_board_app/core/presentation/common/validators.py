@@ -3,6 +3,7 @@ Custom validators.
 """
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 from typing_extensions import NotRequired, TypedDict
@@ -31,7 +32,7 @@ class ValidateMaxTagCount:
         self._max_count = max_count
 
     def __call__(self, value: str) -> ValidatorResponse:
-        number_of_tags = len(value.split("\r\n"))
+        number_of_tags = len(re.split("[ \r\n]+", value))
 
         if number_of_tags > self._max_count:
             return {"status": False, "message": f"Max number of tags is {self._max_count}"}
@@ -46,7 +47,7 @@ class ValidateMaxAreasCount:
         self._max_count = max_count
 
     def __call__(self, value: str) -> ValidatorResponse:
-        number_of_areas = len(value.split('\r\n'))
+        number_of_areas = len(re.split("[ \r\n]+", value))
 
         if number_of_areas > self._max_count:
             return {"status": False, "message": f'Max number of business areas is {self._max_count}'}

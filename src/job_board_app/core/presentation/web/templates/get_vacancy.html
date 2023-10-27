@@ -31,7 +31,7 @@
         {{ loc.name }}, {{ loc.country.name }}; 
     {% endfor %}
 </p>
-{% if vacancy.attachment %}
+{% if vacancy.qr_code %}
     <p>Attachments:<a href='{{ vacancy.attachment.url }}'> Download</a></p>
 {% endif %}
 <p>Tags: 
@@ -39,6 +39,11 @@
     #{{tag.name}} 
 {% endfor %}
 
+{% if vacancy.qr_code %}
+    <p>Qr_code:
+    <p><img src="{{ vacancy.qr_code.url }}" alt=""></p>
+        </p>
+{% endif %}
 </p>
 {% if perms.core.apply_to_vacancy %}
     <a href="{% url 'apply-vacancy' vacancy_id=vacancy.id %}">Apply</a>

@@ -8,6 +8,12 @@ import logging
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import AddAddressDTO, AddCompanyDTO, AddCompanyProfileDTO
+from core.business_logic.exceptions import (
+    CompanyAlreadyExistsError,
+    CompanyNotExistsError,
+    CompanyProfileNotExistsError,
+    CountryNotExistError,
+)
 from core.business_logic.services import (
     create_company,
     get_companies,
@@ -54,7 +60,26 @@ def add_company_controller(request: HttpRequest) -> HttpResponse:
             profile_data = convert_data_from_request_to_dto(AddCompanyProfileDTO, profile_form.cleaned_data)
             address_data = convert_data_from_request_to_dto(AddAddressDTO, address_form.cleaned_data)
             logger.info('The forms have been validated. The company will be added to the database.')
-            create_company(company_data=company_data, profile_data=profile_data, address_data=address_data)
+            try:
+                create_company(company_data=company_data, profile_data=profile_data, address_data=address_data)
+            except CompanyAlreadyExistsError:
+                logger.error(msg='Company with provided data already exist in the database.')
+                error_company_context = {
+                    "company_form": company_form,
+                    "profile_form": profile_form,
+                    "address_form": address_form,
+                    "err_message": "Company with provided data already exist in the database... Please try again.",
+                }
+                return render(request=request, template_name="add_company.html", context=error_company_context)
+            except CountryNotExistError:
+                logger.error(msg='Country with provided data already does not exist in the database.')
+                error_context = {
+                    "company_form": company_form,
+                    "profile_form": profile_form,
+                    "address_form": address_form,
+                    "err_message": "Country with provided data does not exist in the database.",
+                }
+                return render(request=request, template_name="add_company.html", context=error_context)
         else:
             logger.warning('The forms have not been validated.')
             context = {"company_form": company_form, "profile_form": profile_form, "address_form": address_form}
@@ -78,12 +103,23 @@ def companies_list_controller(request: HttpRequest) -> HttpResponse:
 @login_required
 def get_company_controller(request: HttpRequest, company_id: int) -> HttpResponse:
     """Controller for specific company."""
-    company = get_company_by_id(company_id=company_id)
-    profile = get_company_profile_by_id(company_id=company_id)
-    vacancies = get_vacancies_by_company_id(company_id=company_id)
-    context = {"company": company, "profile": profile, "vacancies": vacancies}
-    logger.info(  # pylint: disable=logging-fstring-interpolation
-        f'Successfully rendered template(page) of company {company.name}.',
-        extra={'company_id': company_id, 'company_name': company.name},
-    )
+    try:
+        company = get_company_by_id(company_id=company_id)
+        profile = get_company_profile_by_id(company_id=company_id)
+        vacancies = get_vacancies_by_company_id(company_id=company_id)
+        context = {"company": company, "profile": profile, "vacancies": vacancies}
+        logger.info(  # pylint: disable=logging-fstring-interpolation
+            f'Successfully rendered template(page) of company {company.name}.',
+            extra={'company_id': company_id, 'company_name': company.name},
+        )
+    except CompanyNotExistsError:
+        logger.error(msg='Company with provided data already does not exist in the database.')
+        return HttpResponseBadRequest("Company with provided data does not exist in the database.")
+    except CompanyProfileNotExistsError:
+        logger.error(msg='Company Profile with provided data already does not exist in the database.')
+        context = {
+            "err_message": "Company Profile with provided data does not exist in the database.",
+        }
+        return HttpResponseBadRequest("Company Profile with provided data does not exist in the database.")
+
     return render(request=request, template_name="get_company.html", context=context)

@@ -12,7 +12,7 @@ class Address(BaseModel):
 
     street_name = models.CharField(max_length=30)
     home_number = models.PositiveSmallIntegerField()
-    office_number = models.PositiveSmallIntegerField(blank=False)
+    office_number = models.PositiveSmallIntegerField(blank=True, null=True)
     city = models.ForeignKey(
         to='City', on_delete=models.CASCADE, related_name='addresses', related_query_name='address'
     )

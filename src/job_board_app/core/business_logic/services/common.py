@@ -9,6 +9,8 @@ from io import BytesIO
 from sys import getsizeof
 from uuid import uuid4
 
+import requests  # type: ignore
+from core.business_logic.exceptions import QRCodeServiceUnavailable
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 
@@ -53,3 +55,39 @@ def change_file_size(file: InMemoryUploadedFile) -> InMemoryUploadedFile:
     )
     logger.info('Successfully changed file size', extra={"old_size": str(old_size), 'new_size': str(new_size)})
     return file
+
+
+def get_qr_code(data: str) -> InMemoryUploadedFile:
+    response = requests.get(f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={data}")
+    if response.status_code == 200:
+        output = BytesIO(response.content)
+        return InMemoryUploadedFile(
+            file=output,
+            field_name=None,
+            name=str(uuid4()) + ".png",
+            content_type="image/png",
+            size=getsizeof(output),
+            charset=None,
+        )
+    else:
+        raise QRCodeServiceUnavailable
+
+
+class QRApiAdapter:
+    def __init__(self, base_url: str) -> None:
+        self._base_url = base_url
+
+    def get_qr(self, data: str) -> InMemoryUploadedFile:
+        response = requests.get(f"{self._base_url}/create-qr-code/?size=150x150&data={data}")
+        if response.status_code == 200:
+            output = BytesIO(response.content)
+            return InMemoryUploadedFile(
+                file=output,
+                field_name=None,
+                name=str(uuid4()) + ".png",
+                content_type="image/png",
+                size=getsizeof(output),
+                charset=None,
+            )
+        else:
+            raise QRCodeServiceUnavailable

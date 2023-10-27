@@ -240,7 +240,10 @@ class Migration(migrations.Migration):
                 ('max_salary', models.PositiveIntegerField(null=True)),
                 ('name', models.CharField(max_length=100)),
                 ('description', models.CharField()),
-                ('attachment', models.FileField(null=True, upload_to=core.models.vacancy.vacancy_directory_path)),
+                (
+                    'attachment',
+                    models.FileField(null=True, upload_to=core.models.vacancy.vacancy_attachments_directory_path),
+                ),
                 ('city', models.ManyToManyField(db_table='vacancy_cities', related_name='vacancies', to='core.city')),
                 (
                     'company',

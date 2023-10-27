@@ -11,7 +11,7 @@ from .base import BaseModel
 def company_directory_path(instance: "CompanyProfile", filename: str) -> str:
     """Provides a path to directory with files of specific company."""
 
-    return f'companies_media/company_{instance.company.id,}/{filename}'
+    return f'companies_media/company_{instance.company.id}/{filename}'
 
 
 class CompanyProfile(BaseModel):

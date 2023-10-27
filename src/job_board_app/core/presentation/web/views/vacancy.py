@@ -8,7 +8,12 @@ from logging import getLogger
 from typing import TYPE_CHECKING
 
 from core.business_logic.dto import AddVacancyDTO, ApplyVacancyDTO, SearchVacancyDTO
-from core.business_logic.exceptions import CompanyNotExistsError
+from core.business_logic.exceptions import (
+    CompanyNotExistsError,
+    CountryNotExistError,
+    EmploymentFormatNotExistError,
+    WorkFormatNotExistError,
+)
 from core.business_logic.services import (
     apply_to_vacancy,
     create_vacancy,
@@ -19,6 +24,7 @@ from core.business_logic.services import (
     get_work_formats,
     search_vacancies,
 )
+from core.business_logic.services.common import QRApiAdapter
 from core.presentation.common.converters import convert_data_from_request_to_dto
 from core.presentation.web.forms import AddVacancyForm, ApplyVacancyForm, SearchVacancyForm
 from core.presentation.web.pagination import CustomPagination, PageNotExists
@@ -111,14 +117,32 @@ def add_vacancy_controller(request: HttpRequest) -> HttpResponse:
                 },
             )
             try:
-                create_vacancy(data=data)
-            except CompanyNotExistsError as err:
-                logger.error(  # pylint: disable=logging-fstring-interpolation
-                    f"Company '{data.company_name}' doesn't exist in the database.",
-                    extra={'company_name': data.company_name},
-                    exc_info=err,
-                )
-                return HttpResponseBadRequest(content="Provided company doesn't exist.")
+                qr_adapter = QRApiAdapter(base_url="https://api.qrserver.com/v1/")
+                create_vacancy(data=data, qr_adapter=qr_adapter)
+            except CompanyNotExistsError:
+                error_context = {
+                    "form": form,
+                    "err_message": "Company with provided data does not exist in the database.",
+                }
+                return render(request=request, template_name="add_vacancy.html", context=error_context)
+            except CountryNotExistError:
+                error_context = {
+                    "form": form,
+                    "err_message": "Country with provided data does not exist in the database.",
+                }
+                return render(request=request, template_name="add_vacancy.html", context=error_context)
+            except EmploymentFormatNotExistError:
+                error_context = {
+                    "form": form,
+                    "err_message": "Employment format with provided data does not exist in the database.",
+                }
+                return render(request=request, template_name="add_vacancy.html", context=error_context)
+            except WorkFormatNotExistError:
+                error_context = {
+                    "form": form,
+                    "err_message": "Work format with provided data does not exist in the database.",
+                }
+                return render(request=request, template_name="add_vacancy.html", context=error_context)
         else:
             logger.warning('The forms have not been validated.')
             context = {"form": form}
