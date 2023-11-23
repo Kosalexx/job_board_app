@@ -7,7 +7,7 @@ from core.business_logic.exceptions import (
 )
 from core.business_logic.services import create_company, get_companies, get_company_by_id, get_company_profile_by_id
 from core.models import Address, BusinessArea, City, Company, CompanyProfile
-from core.tests.utils import create_test_company_in_db, get_test_image
+from core.tests.utils import create_test_company_in_db, create_test_vacancy_in_db, get_test_image, get_test_pdf
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.test import TestCase
 
@@ -19,8 +19,43 @@ class CompanyServicesTests(TestCase):
         "Hook method for setting up the test fixture before exercising it."
 
         self.logo_for_test = get_test_image()
-        create_test_company_in_db(company_name='test_company_1', test_file=self.logo_for_test)
-        create_test_company_in_db(company_name='test_company_2', test_file=self.logo_for_test)
+        self.attachment_for_test = get_test_pdf()
+        self.company_1 = create_test_company_in_db(company_name='test_company_1', test_file=self.logo_for_test)
+        self.company_2 = create_test_company_in_db(company_name='test_company_2', test_file=self.logo_for_test)
+        self.company_3 = create_test_company_in_db(company_name='test_company_3', test_file=self.logo_for_test)
+        self.vacancy_1 = create_test_vacancy_in_db(
+            vacancy_name='Test_vacancy_1',
+            company=self.company_1,
+            attachment_file=self.attachment_for_test,
+            min_salary=100,
+            max_salary=1000,
+            description='vac_1 description',
+            employment_formats=['B2B'],
+            work_formats=['Freelance', 'Part-time'],
+            cities='Minsk',
+            tags='python sql',
+        )
+        self.vacancy_2 = create_test_vacancy_in_db(
+            vacancy_name='Test_vacancy_2', company=self.company_1, attachment_file=self.attachment_for_test
+        )
+        self.vacancy_3 = create_test_vacancy_in_db(
+            vacancy_name='Test_vacancy_3', company=self.company_2, attachment_file=self.attachment_for_test
+        )
+        self.vacancy_4 = create_test_vacancy_in_db(
+            vacancy_name='another_vacancy_1',
+            company=self.company_3,
+            attachment_file=self.attachment_for_test,
+            level='Middle',
+            experience='3+ years',
+            min_salary=3000,
+            max_salary=5000,
+            description='Test description',
+            tags='python sql',
+            country="Armenia",
+            cities='Erevan',
+            employment_formats=['Mandate contract'],
+            work_formats=['Office work', 'Part-time'],
+        )
         result: None = super().setUp()
         return result
 
@@ -212,9 +247,10 @@ class CompanyServicesTests(TestCase):
         result_companies_list = get_companies()
         company_names = [row.name for row in result_companies_list]
 
-        self.assertEqual(len(result_companies_list), 2)
+        self.assertEqual(len(result_companies_list), 3)
         self.assertIn('test_company_1', company_names)
         self.assertIn('test_company_2', company_names)
+        self.assertIn('test_company_3', company_names)
 
     def test_get_company_by_id_successfully(self) -> None:
         """Checks correctness of getting company by entered company_id from the database."""
@@ -279,3 +315,12 @@ class CompanyServicesTests(TestCase):
 
         with self.assertRaises(CompanyProfile.DoesNotExist):
             CompanyProfile.objects.get(pk=company_id)
+
+    def test_get_companies_order_by_vacancy_count(self) -> None:
+        """Checks if the data order is correct when retrieving the list of companies from the database."""
+
+        result_companies_list = get_companies()
+        for ind in range(1, len(result_companies_list)):
+            self.assertLessEqual(
+                result_companies_list[ind].vacancy__count, result_companies_list[ind - 2].vacancy__count
+            )

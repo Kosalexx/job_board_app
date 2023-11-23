@@ -1,5 +1,8 @@
 """
 API Views (controllers) for job_board_app that related with company logic.
+from django.contrib.auth.decorators import permission_required
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 """
 from __future__ import annotations
 
@@ -17,13 +20,11 @@ from core.presentation.api_v1.serializers import (
     ErrorSerializer,
 )
 from core.presentation.common.converters import convert_data_from_request_to_dto
-from django.contrib.auth.decorators import permission_required
 from django.views.decorators.cache import cache_page
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import parsers
-from rest_framework.decorators import api_view, parser_classes, permission_classes, throttle_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, parser_classes, throttle_classes
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from rest_framework.throttling import UserRateThrottle
@@ -73,8 +74,8 @@ logger = getLogger(__name__)
 )
 @api_view(http_method_names=['GET', 'POST'])
 @cache_page(10)
-@permission_required(["core.add_company"])
-@permission_classes([IsAuthenticated])
+# @permission_required(["core.add_company"])
+# @permission_classes([IsAuthenticated])
 @parser_classes([parsers.MultiPartParser])
 def companies_api_controller(request: Request) -> Response:
     """API controller that returns list of all vacancies."""
@@ -120,7 +121,7 @@ def companies_api_controller(request: Request) -> Response:
 )
 @api_view(http_method_names=['GET'])
 @throttle_classes([UserRateThrottle])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def company_api_controller(request: Request, company_id: int) -> Response:
     """API controller that returns specific company with entered id."""
 
