@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     "rest_framework",
+    "rest_framework.authtoken",
     # internal
     'core',
     # 3-rd party
@@ -216,6 +217,7 @@ CACHES = {
 
 # REST_FRAMEWORK settings
 
+LOGIN_URL = '/signin/'
 REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {"user": "1000/day"},
     "DEFAULT_AUTHENTICATION_CLASSES": [

@@ -1,5 +1,9 @@
 """
 API Views (controllers) for job_board_app that related with vacancy logic.
+
+from django.contrib.auth.decorators import permission_required
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 """
 from __future__ import annotations
 
@@ -27,12 +31,10 @@ from core.presentation.api_v1.serializers import (
     VacancyInfoSerializer,
 )
 from core.presentation.common.converters import convert_data_from_request_to_dto
-from django.contrib.auth.decorators import permission_required
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import parsers
-from rest_framework.decorators import api_view, parser_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
@@ -112,8 +114,8 @@ logger = getLogger(__name__)
     },
 )
 @api_view(http_method_names=['GET', 'POST'])
-@permission_required(["core.add_vacancy"])
-@permission_classes([IsAuthenticated])
+# @permission_required(["core.add_vacancy"])
+# @permission_classes([IsAuthenticated])
 @parser_classes([parsers.MultiPartParser])
 def vacancies_api_controller(request: Request) -> Response:
     """API controller that returns list of all vacancies."""
@@ -167,7 +169,7 @@ def vacancies_api_controller(request: Request) -> Response:
     },
 )
 @api_view(http_method_names=['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def vacancy_api_controller(request: Request, vacancy_id: int) -> Response:
     """API controller that returns specific vacancy with entered id."""
 
